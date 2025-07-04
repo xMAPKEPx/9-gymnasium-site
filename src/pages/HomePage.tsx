@@ -49,7 +49,7 @@ const HomePage = () => {
           <button className="rounded-lg border px-6 py-4 text-lg font-medium hover:bg-gray-100" onClick={() => navigate('/timeline')}>Лента времени</button>
           <button className="rounded-lg border px-6 py-4 text-lg font-medium hover:bg-gray-100" onClick={() => navigate('/people')}>Люди девятки</button>
         </div>
-        <button className="rounded-lg border px-6 py-4 text-lg font-medium w-80 hover:bg-gray-100">Ассоциация выпускников и эндаумент-фонд</button>
+        <button className="rounded-lg border px-6 py-4 text-lg font-medium w-80 hover:bg-gray-100" onClick={() => navigate('/association')}>Ассоциация выпускников и эндаумент-фонд</button>
         <div className="flex gap-4">
           <button className="rounded-lg border px-6 py-4 text-lg font-medium hover:bg-gray-100" onClick={() => setAuthOpen(true)}>Зайти в Девятку</button>
           <button className="rounded-lg border px-6 py-4 text-lg font-medium hover:bg-gray-100" onClick={() => setFeedbackOpen(true)}>Поделись своим воспоминанием</button>
