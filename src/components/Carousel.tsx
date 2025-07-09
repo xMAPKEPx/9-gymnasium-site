@@ -1,71 +1,143 @@
-import { useRef } from 'react';
+import { type FC, type ReactNode, useRef, useState, useEffect } from 'react';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
-type CarouselProps = {
-  children: React.ReactNode;
+interface CarouselProps {
+  children: ReactNode[];
   itemsToShow?: number;
-};
+  gap?: number; // gap в px
+  className?: string;
+}
 
-const Carousel = ({ children, itemsToShow = 3 }: CarouselProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+const Carousel: FC<CarouselProps> = ({ children, itemsToShow = 3, gap = 16, className = '' }) => {
+  const total = children.length;
+  const [index, setIndex] = useState(itemsToShow); // начинаем с первого "реального" элемента
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const trackRef = useRef<HTMLDivElement>(null);
 
-  const childrenArray = Array.isArray(children) ? children : [children];
-  const isActive = childrenArray.length > itemsToShow;
+  // Если элементов мало — не делаем бесконечную прокрутку и не показываем кнопки
+  const isInfinite = total > itemsToShow;
 
-  const scroll = (direction: 'left' | 'right') => {
-    if (containerRef.current && isActive) {
-      const { scrollLeft, clientWidth } = containerRef.current;
-      const scrollAmount = clientWidth * 0.8;
-      containerRef.current.scrollTo({
-        left: direction === 'left' ? scrollLeft - scrollAmount : scrollLeft + scrollAmount,
-        behavior: 'smooth',
-      });
+  // Дублируем элементы для бесконечной прокрутки
+  const extendedChildren = isInfinite
+    ? [
+        ...children.slice(-itemsToShow),
+        ...children,
+        ...children.slice(0, itemsToShow),
+      ]
+    : children;
+
+  // Обработка перехода к клонам
+  useEffect(() => {
+    if (!isInfinite || !isTransitioning) return;
+    if (index === 0) {
+      setTimeout(() => {
+        setIsTransitioning(false);
+        setIndex(total);
+      }, 300);
+    } else if (index === total + itemsToShow) {
+      setTimeout(() => {
+        setIsTransitioning(false);
+        setIndex(itemsToShow);
+      }, 300);
+    }
+  }, [index, isTransitioning, total, itemsToShow, isInfinite]);
+
+  // Управление переходом
+  const goTo = (newIndex: number) => {
+    setIsTransitioning(true);
+    setIndex(newIndex);
+  };
+
+  const handlePrev = () => {
+    if (!isTransitioning) {
+      goTo(index - 1);
+    }
+  };
+  const handleNext = () => {
+    if (!isTransitioning) {
+      goTo(index + 1);
     }
   };
 
-  // gap-1 = 0.25rem, учитываем это в расчёте ширины
-  const gapRem = 0.25;
-  const itemWidth = itemsToShow > 0 ? `calc((100% - ${(itemsToShow - 1) * gapRem}rem) / ${itemsToShow})` : 'auto';
+  // Сброс transition после "телепортации"
+  useEffect(() => {
+    if (!isInfinite) return;
+    if (!isTransitioning && (index === itemsToShow || index === total)) {
+      if (trackRef.current) {
+        trackRef.current.style.transition = 'none';
+        void trackRef.current.offsetWidth;
+        trackRef.current.style.transition = '';
+      }
+    }
+  }, [isTransitioning, index, itemsToShow, total, isInfinite]);
 
-  const childrenWithWidth = childrenArray.map((child, idx) => (
-    <div key={idx} style={{ minWidth: itemWidth, maxWidth: itemWidth }}>
-      {child}
-    </div>
-  ));
+  // Вычисляем transform
+  const translate = isInfinite
+    ? -(100 / itemsToShow) * index
+    : 0;
 
-  if (!isActive) {
-    // Просто ряд карточек без скролла и стрелок
-    return (
-      <div className="flex gap-1 py-2 px-10 justify-center">
-        {childrenWithWidth}
-      </div>
-    );
-  }
+  // Ширина карточки с учётом gap
+  const cardWidth = `calc((100% - ${(itemsToShow - 1) * gap}px) / ${itemsToShow})`;
 
   return (
-    <div className="relative">
-      <button
-        type="button"
-        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 border rounded-full w-8 h-8 flex items-center justify-center shadow hover:bg-gray-100"
-        onClick={() => scroll('left')}
-        aria-label="Прокрутить влево"
-      >
-        &#8592;
-      </button>
-      <div
-        ref={containerRef}
-        className="flex gap-1 overflow-x-auto scrollbar-hide py-2 px-10"
-        style={{ scrollBehavior: 'smooth' }}
-      >
-        {childrenWithWidth}
+    <div className={`relative w-full ${className}`} aria-label="Карусель">
+      {isInfinite && (
+        <button
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 text-primary border border-primary hover:bg-white hover:text-primary transition-colors duration-200 disabled:opacity-40"
+          onClick={handlePrev}
+          aria-label="Предыдущий"
+          disabled={isTransitioning}
+          type="button"
+        >
+          <FaChevronLeft size={22} />
+        </button>
+      )}
+      <div className="flex overflow-hidden w-full justify-center">
+        <div
+          ref={trackRef}
+          style={{
+            display: 'flex',
+            gap: `${gap}px`,
+            transform: `translateX(${translate}%)`,
+            transition: isInfinite && isTransitioning ? 'transform 0.3s' : 'none',
+            width: '100%',
+          }}
+          onTransitionEnd={() => {
+            if (!isInfinite) return;
+            setIsTransitioning(false);
+            if (index === 0) {
+              setIndex(total);
+            } else if (index === total + itemsToShow) {
+              setIndex(itemsToShow);
+            }
+          }}
+        >
+          {extendedChildren.map((child, i) => (
+            <div
+              key={i}
+              className="flex-shrink-0"
+              style={{
+                maxWidth: cardWidth,
+                flexBasis: cardWidth,
+              }}
+              aria-hidden={isInfinite ? (i < index || i >= index + itemsToShow) : false}
+            >
+              {child}
+            </div>
+          ))}
+        </div>
       </div>
-      <button
-        type="button"
-        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 border rounded-full w-8 h-8 flex items-center justify-center shadow hover:bg-gray-100"
-        onClick={() => scroll('right')}
-        aria-label="Прокрутить вправо"
-      >
-        &#8594;
-      </button>
+      {isInfinite && (
+        <button
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 text-primary border border-primary hover:bg-white hover:text-primary transition-colors duration-200 disabled:opacity-40"
+          onClick={handleNext}
+          aria-label="Следующий"
+          disabled={isTransitioning}
+          type="button"
+        >
+          <FaChevronRight size={22} />
+        </button>
+      )}
     </div>
   );
 };

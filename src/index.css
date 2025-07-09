@@ -1,4 +1,41 @@
 @import "tailwindcss";
+@tailwind utilities;
+
+@theme {
+  /* Цвета */
+  --color-primary: #223F93;
+  --color-accent: #EAB308;
+  --color-bg: #F8F9FB;
+  --color-gray-100: #F3F4F6;
+  --color-gray-400: #9CA3AF;
+  --color-gray-700: #374151;
+  --color-gray-900: #111827;
+
+  /* Шрифты */
+  --font-sans: Inter, Arial, sans-serif;
+  --font-heading: Montserrat, Arial, sans-serif;
+
+  /* Тени */
+  --shadow-card: 0 4px 24px 0 rgba(26, 86, 219, 0.08);
+  --shadow-card-lg: 0 8px 32px 0 rgba(26, 86, 219, 0.16);
+
+  /* Размеры шрифтов */
+  --text-h1: 2.5rem;
+  --text-h1--line-height: 3rem;
+  --text-h1--font-weight: 700;
+  --text-h2: 2rem;
+  --text-h2--line-height: 2.5rem;
+  --text-h2--font-weight: 600;
+  --text-h3: 1.5rem;
+  --text-h3--line-height: 2rem;
+  --text-h3--font-weight: 600;
+
+  /* Радиусы */
+  --radius-xl: 1.25rem;
+
+  /* Градиенты */
+  --background-hero-gradient: linear-gradient(90deg, #1A56DB 0%, #F59E42 100%);
+}
 
 html {
     scroll-behavior: smooth;

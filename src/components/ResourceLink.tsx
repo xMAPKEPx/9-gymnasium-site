@@ -1,19 +1,23 @@
-type ResourceLinkProps = {
-  href: string;
-  children: React.ReactNode;
-};
+import type { FC, ReactNode } from 'react';
 
-const ResourceLink = ({ href, children }: ResourceLinkProps) => {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="w-24 h-12 border rounded-full flex items-center justify-center transition-transform shadow-sm hover:shadow-lg hover:-translate-y-1 cursor-pointer text-inherit no-underline"
-    >
-      {children}
-    </a>
-  );
-};
+interface ResourceLinkProps {
+  href: string;
+  children: ReactNode;
+  icon?: ReactNode;
+  ariaLabel?: string;
+}
+
+const ResourceLink: FC<ResourceLinkProps> = ({ href, children, icon, ariaLabel }) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-primary hover:text-white transition-all duration-300 font-medium shadow-card"
+    aria-label={ariaLabel || (typeof children === 'string' ? children : undefined)}
+  >
+    {icon}
+    {children}
+  </a>
+);
 
 export default ResourceLink; 

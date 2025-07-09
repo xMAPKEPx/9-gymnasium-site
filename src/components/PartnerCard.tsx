@@ -1,23 +1,23 @@
-type PartnerCardProps = {
+import Card from './Card';
+
+interface PartnerCardProps {
+  avatarUrl: string;
   name: string;
   position: string;
-  avatarUrl?: string;
-};
+  onClick?: () => void;
+}
 
-const PartnerCard = ({ name, position, avatarUrl }: PartnerCardProps) => {
-  return (
-    <div className="flex flex-col items-center w-32">
-      <div className="w-20 h-20 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center mb-2">
-        {avatarUrl ? (
-          <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
-        ) : (
-          <span className="text-3xl text-gray-400">👤</span>
-        )}
-      </div>
-      <div className="text-center font-semibold text-sm">{name}</div>
-      <div className="text-center text-xs text-gray-500">{position}</div>
-    </div>
-  );
-};
+const PartnerCard = ({ avatarUrl, name, position, onClick }: PartnerCardProps) => (
+  <Card className="w-full max-w-xs flex flex-col items-center p-6" onClick={onClick} ariaLabel={`Партнёр: ${name}`}>
+    <img
+      src={avatarUrl}
+      alt={name}
+      className="w-20 h-20 rounded-full object-cover mb-4 border-4 border-primary shadow-card"
+      loading="lazy"
+    />
+    <div className="font-heading text-lg text-gray-900 mb-1 text-center">{name}</div>
+    <div className="text-gray-400 text-sm text-center">{position}</div>
+  </Card>
+);
 
 export default PartnerCard; 

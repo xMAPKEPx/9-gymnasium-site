@@ -1,84 +1,52 @@
-import Carousel from "../components/Carousel";
-import PartnerCard from "../components/PartnerCard";
+import Header from '../components/Header';
+import Banner from '../components/Banner';
+import SectionTitle from '../components/SectionTitle';
+import Card from '../components/Card';
+import Badge from '../components/Badge';
+import Button from '../components/Button';
+import SocialIcons from '../components/SocialIcons';
+import ContactForm from '../components/ContactForm';
+import Footer from '../components/Footer';
 
-const donors = [
-  'Аноним',
-  'Дмитрий Баканёв',
-  'Екатерина Попова',
-  'Антон Езуб',
-  'Александр Василевский',
-  '...'
+const benefits = [
+  { icon: '🎓', title: 'Поддержка выпускников', description: 'Ассоциация помогает выпускникам в профессиональном развитии и поддерживает связь между поколениями.' },
+  { icon: '🤝', title: 'Сильное сообщество', description: 'Объединяем людей, которые хотят делать школу и мир лучше.' },
+  { icon: '💡', title: 'Проекты и инициативы', description: 'Запускаем образовательные, культурные и благотворительные проекты.' },
+  { icon: '💰', title: 'Эндаумент-фонд', description: 'Финансовая поддержка талантливых учеников и развитие инфраструктуры.' },
 ];
 
-const committee = [
-  { id: 1, name: 'Дмитрий Баканёв', position: 'Председатель', avatarUrl: '' },
-  { id: 2, name: 'Екатерина Попова', position: 'Зам. председателя', avatarUrl: '' },
-  { id: 3, name: 'Антон Езуб', position: 'Зам. председателя', avatarUrl: '' },
-  { id: 4, name: 'Александр Василевский', position: 'Зам. председателя', avatarUrl: '' },
-];
-
-const documents = [
-  'Отчёты о деятельности',
-  'Реквизиты',
-  'Протоколы собраний попсовета Эндаумент фонда',
-];
-
-const news = [
-  { id: 1, title: 'Новость 1' },
-  { id: 2, title: 'Новость 2' },
-  { id: 3, title: 'Новость 3' },
-];
-
-const AssociationPage = () => {
-  return (
-    <div className="min-h-screen bg-white text-gray-900 flex flex-col items-center">
-      <header className="w-full bg-black text-white py-2 px-4 text-sm text-left">Ассоциация + Эндаумент</header>
-      <main className="w-full max-w-3xl flex flex-col items-center px-4">
-        <h1 className="text-5xl font-light mt-8 mb-2">4 412 845 ₽</h1>
-        <div className="text-xl mb-6">27 дарителей</div>
-        <button className="border rounded px-8 py-2 mb-12 hover:bg-gray-100">Сделать взнос</button>
-
-        <h2 className="text-2xl font-bold mb-2 mt-8">Что такое эндаумент</h2>
-        <div className="mb-8 text-lg">Эндаумент — это целевой капитал, предназначенный для развития Гимназии №9. Средства идут на помощь талантливым ученикам, поддержку ветеранов-учителей и цифровизацию образования.</div>
-
-        <h2 className="text-xl font-semibold mb-2 mt-8">История создания эндаумента</h2>
-        <div className="mb-8">Фонд создан в 2021 году и действует по настоящее время.</div>
-
-        <h2 className="text-xl font-semibold mb-2 mt-8">Список дарителей</h2>
-        <ul className="mb-8 list-disc pl-6 max-h-60 overflow-y-auto">
-          {donors.map((d, i) => <li key={i}>{d}</li>)}
-        </ul>
-        <button className="border rounded px-8 py-2 mb-12 hover:bg-gray-100">Сделать взнос</button>
-
-        <h2 className="text-xl font-semibold mb-2 mt-8">Оргкомитет ассоциации и фонда</h2>
-        <div className="flex gap-4 mb-4">
-          {committee.map((member) => (
-            <PartnerCard key={member.id} name={member.name} position={member.position} avatarUrl={member.avatarUrl} />
-          ))}
+const AssociationPage = () => (
+  <div className="min-h-screen flex flex-col bg-bg text-gray-900">
+    <Header />
+    <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-8">
+      <Banner
+        title="Ассоциация выпускников и эндаумент-фонд"
+        subtitle="Вместе мы создаём возможности для будущих поколений, поддерживаем традиции и развиваем школу."
+        buttonText="Вступить в ассоциацию"
+        onButtonClick={() => {}}
+      />
+      <SectionTitle className="mt-16 mb-8">Зачем вступать?</SectionTitle>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-8 mb-12">
+        {benefits.map((b, i) => (
+          <Card key={i} className="flex flex-col items-start gap-3">
+            <Badge size="md" color="accent" icon={<span className="text-xl">{b.icon}</span>}>{b.title}</Badge>
+            <div className="prose prose-sm text-gray-700">{b.description}</div>
+          </Card>
+        ))}
+      </div>
+      <SectionTitle className="mb-8">Контакты и соцсети</SectionTitle>
+      <div className="flex flex-col md:flex-row gap-8 mb-12">
+        <div className="flex-1 flex flex-col gap-4 items-start">
+          <SocialIcons telegram="#" vk="#" email="info@gymnasium.ru" size={32} />
+          <Button variant="primary" size="lg" ariaLabel="Вступить">Вступить в ассоциацию</Button>
         </div>
-        <div className="mb-4">(не путать с попсоветом эндаумента) — команда из 10-15 человек, кто организует всю движуху</div>
-        <div className="mb-4 text-sm text-gray-600">Активный с кучей идей? Вступай и помогай, мы тут все на общественных началах</div>
-        <button className="border rounded px-8 py-2 mb-12 hover:bg-gray-100">Вступай</button>
-
-        <h2 className="text-xl font-semibold mb-2 mt-8">Официальные документы</h2>
-        <ul className="mb-8 list-disc pl-6">
-          {documents.map((d, i) => <li key={i}>{d}</li>)}
-        </ul>
-
-        <h2 className="text-xl font-semibold mb-2 mt-8">Наши мероприятия и активности (с главной)</h2>
-        <div className="flex gap-8 mb-12">
-          <Carousel itemsToShow={5}>
-            {news.map((n) => (
-              <div key={n.id} className="w-40 h-40 border rounded-2xl flex items-end justify-center p-2">
-                <span className="mb-2">{n.title}</span>
-              </div>
-            ))}
-          </Carousel>
-          
+        <div className="flex-1">
+          <ContactForm />
         </div>
-      </main>
-    </div>
-  );
-};
+      </div>
+    </main>
+    <Footer />
+  </div>
+);
 
 export default AssociationPage; 
