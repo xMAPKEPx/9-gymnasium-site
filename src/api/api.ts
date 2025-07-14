@@ -15,5 +15,10 @@ export const getNews = async (documentId : string) => {
     return response.data
 }
 
-export { DEV_SERVER };
+export const getHomePage = async () => {
+  const res = await fetch('/api/home-page?populate=deep,3');
+  const json = await res.json();
+  const data = json.data?.attributes;
+  return data;
+}
 

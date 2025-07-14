@@ -1,68 +1,232 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
-type FeedbackModalProps = {
+const SECTIONS = [
+  'История класса',
+  'Люди девятки',
+  'Выпускники',
+  'Учителя',
+  'Другое',
+];
+
+interface FeedbackModalProps {
   open: boolean;
   onClose: () => void;
+}
+
+const initialState = {
+  name: '',
+  year: '',
+  photo: null as File | null,
+  story: '',
+  attachTo: '',
 };
 
 const FeedbackModal = ({ open, onClose }: FeedbackModalProps) => {
-  const [name, setName] = useState('');
-  const [year, setYear] = useState('');
-  const [photo, setPhoto] = useState<File | null>(null);
-  const [story, setStory] = useState('');
-  const [attachTo, setAttachTo] = useState('');
+  const [values, setValues] = useState(initialState);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [submitted, setSubmitted] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const currentYear = new Date().getFullYear();
 
   if (!open) return null;
+
+  const validate = () => {
+    const newErrors: { [key: string]: string } = {};
+    if (!values.name) newErrors.name = 'Поле обязательно для заполнения';
+    if (values.year && (+values.year < 1930 || +values.year > currentYear)) {
+      newErrors.year = 'Некорректный год выпуска';
+    }
+    if (!values.attachTo) newErrors.attachTo = 'Выберите раздел';
+    if (!values.story || values.story.length < 500 || values.story.length > 2000) {
+      newErrors.story = 'Текст должен быть от 500 до 2000 символов';
+    }
+    if (values.photo) {
+      if (!['image/jpeg', 'image/png'].includes(values.photo.type)) {
+        newErrors.photo = 'Только JPG или PNG';
+      }
+      if (values.photo.size > 10 * 1024 * 1024) {
+        newErrors.photo = 'Файл не больше 10MB';
+      }
+    }
+    return newErrors;
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const target = e.target;
+    const { name, value } = target;
+    if (name === 'photo' && target instanceof HTMLInputElement && target.files) {
+      setValues({ ...values, photo: target.files[0] ? target.files[0] : null });
+      setErrors({ ...errors, photo: '' });
+    } else {
+      setValues({ ...values, [name]: value });
+      setErrors({ ...errors, [name]: '' });
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setValues({ ...values, photo: e.dataTransfer.files[0] });
+      setErrors({ ...errors, photo: '' });
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(true);
+  };
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(false);
+  };
+
+  const handleFileClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newErrors = validate();
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    setSubmitted(true);
+    // Здесь отправка формы
+  };
+
+  const handleModalClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
+  if (submitted) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
+        <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-xl relative" onClick={handleModalClick}>
+          <button className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl" onClick={onClose} aria-label="Закрыть">×</button>
+          <div className="text-green-600 font-medium py-8 text-center text-lg">Спасибо за ваше воспоминание!</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
       <div
-        className="bg-white rounded-3xl p-8 w-80 flex flex-col items-center shadow-xl relative"
-        onClick={e => e.stopPropagation()}
+        className="bg-white rounded-3xl p-8 max-w-md w-full flex flex-col items-center shadow-xl relative"
+        onClick={handleModalClick}
       >
-        <button className="absolute top-2 right-2 text-2xl" onClick={onClose}>&times;</button>
-        <h2 className="text-xl font-semibold mb-6 text-center">Поделись своим воспоминанием</h2>
-        <form className="flex flex-col gap-4 w-full items-center">
-          <input
-            type="text"
-            placeholder="Имя"
-            className="border rounded px-3 py-2 w-full text-center"
-            value={name}
-            onChange={e => setName(e.target.value)}
-          />
-          <input
-            type="number"
-            placeholder="Год выпуска"
-            className="border rounded px-3 py-2 w-full text-center"
-            value={year}
-            onChange={e => setYear(e.target.value)}
-          />
-          <input
-            type="file"
-            accept="image/*"
-            className="border rounded px-3 py-2 w-full text-center"
-            onChange={e => setPhoto(e.target.files ? e.target.files[0] : null)}
-          />
-          <textarea
-            placeholder="История/текст"
-            className="border rounded px-3 py-2 w-full text-center resize-none"
-            rows={3}
-            value={story}
-            onChange={e => setStory(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Куда прикрепляем"
-            className="border rounded px-3 py-2 w-full text-center"
-            value={attachTo}
-            onChange={e => setAttachTo(e.target.value)}
-          />
+        <button className="absolute top-2 right-2 text-2xl" onClick={onClose} aria-label="Закрыть">×</button>
+        <h2 className="text-2xl font-bold mb-8 text-center text-[#1A3E8A]">Отправить воспоминание</h2>
+        <form className="flex flex-col gap-5 w-full" onSubmit={handleSubmit}>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="name" className="font-medium text-gray-700 mb-1">ФИО<span className="text-red-500">*</span></label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              value={values.name}
+              onChange={handleChange}
+              placeholder="Иванов Иван Иванович"
+              className={`rounded-lg border border-gray-300 px-4 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200 ${errors.name ? 'border-red-500' : ''}`}
+              aria-invalid={!!errors.name}
+              aria-describedby={errors.name ? 'name-error' : undefined}
+              required
+            />
+            {errors.name && <span id="name-error" className="text-red-500 text-xs mt-1">{errors.name}</span>}
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="year" className="font-medium text-gray-700 mb-1">Год выпуска</label>
+            <input
+              id="year"
+              name="year"
+              type="number"
+              value={values.year}
+              onChange={handleChange}
+              placeholder="2024"
+              min={1930}
+              max={currentYear}
+              className={`rounded-lg border border-gray-300 px-4 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200 ${errors.year ? 'border-red-500' : ''}`}
+              aria-invalid={!!errors.year}
+              aria-describedby={errors.year ? 'year-error' : undefined}
+            />
+            {errors.year && <span id="year-error" className="text-red-500 text-xs mt-1">{errors.year}</span>}
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="font-medium text-gray-700 mb-1">Фотография</label>
+            <div
+              className={`border-2 border-dashed rounded-xl px-4 py-6 flex flex-col items-center justify-center cursor-pointer transition-colors ${dragActive ? 'border-blue-600 bg-blue-50' : 'border-blue-400 bg-blue-50'} ${errors.photo ? 'border-red-500' : ''}`}
+              onClick={handleFileClick}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                name="photo"
+                accept="image/jpeg,image/png"
+                className="hidden"
+                onChange={handleChange}
+              />
+              <svg width="40" height="40" fill="none" viewBox="0 0 24 24" className="mb-2 text-[#1A3E8A]"><path fill="currentColor" d="M12 16a1 1 0 0 1-1-1V9.83l-1.88 1.88a1 1 0 1 1-1.42-1.42l3.59-3.59a1 1 0 0 1 1.42 0l3.59 3.59a1 1 0 1 1-1.42 1.42L13 9.83V15a1 1 0 0 1-1 1Z"/><path fill="currentColor" d="M19 18H5a1 1 0 1 1 0-2h14a1 1 0 1 1 0 2Z"/></svg>
+              {values.photo ? (
+                <span className="text-gray-700 text-sm text-center">{values.photo.name}</span>
+              ) : (
+                <>
+                  <span className="text-gray-700 text-base text-center">Перетащите файл сюда или нажмите для выбора</span>
+                  <span className="text-gray-400 text-xs mt-1">JPG, PNG (макс. 10MB)</span>
+                </>
+              )}
+            </div>
+            {errors.photo && <span className="text-red-500 text-xs mt-1">{errors.photo}</span>}
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="story" className="font-medium text-gray-700 mb-1">История</label>
+            <textarea
+              id="story"
+              name="story"
+              value={values.story}
+              onChange={handleChange}
+              placeholder="Расскажите о вашем школьном воспоминании..."
+              className={`rounded-lg border border-gray-300 px-4 py-2 min-h-[120px] focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200 ${errors.story ? 'border-red-500' : ''}`}
+              aria-invalid={!!errors.story}
+              aria-describedby={errors.story ? 'story-error' : undefined}
+              required
+            />
+            <div className="flex justify-between text-xs text-gray-400 mt-1">
+              <span>{values.story.length} / 2000</span>
+              {errors.story && <span id="story-error" className="text-red-500">{errors.story}</span>}
+            </div>
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="attachTo" className="font-medium text-gray-700 mb-1">Куда прикрепляем</label>
+            <select
+              id="attachTo"
+              name="attachTo"
+              value={values.attachTo}
+              onChange={handleChange}
+              className={`rounded-lg border border-gray-300 px-4 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200 ${errors.attachTo ? 'border-red-500' : ''}`}
+              aria-invalid={!!errors.attachTo}
+              aria-describedby={errors.attachTo ? 'attachTo-error' : undefined}
+              required
+            >
+              <option value="">Выберите раздел</option>
+              {SECTIONS.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+            {errors.attachTo && <span id="attachTo-error" className="text-red-500 text-xs mt-1">{errors.attachTo}</span>}
+          </div>
           <button
             type="submit"
-            className="bg-blue-600 text-white rounded px-4 py-2 mt-2 hover:bg-blue-700 transition-colors w-full"
-            disabled
+            aria-label="Отправить воспоминание"
+            className={`block w-full py-2 text-base font-bold rounded-lg bg-[#1A3E8A] text-white hover:bg-[#23407C] focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200 mt-2 ${Object.keys(validate()).length > 0 ? 'opacity-60 cursor-not-allowed' : ''}`}
+            disabled={Object.keys(validate()).length > 0}
           >
-            Отправить
+            Отправить воспоминание
           </button>
         </form>
       </div>

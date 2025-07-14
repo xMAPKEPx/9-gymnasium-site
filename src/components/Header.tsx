@@ -1,8 +1,5 @@
-import { useState } from 'react';
-
 const Header = () => {
   // Замените на свою логику авторизации
-  const [isLoggedIn] = useState(false);
 
   return (
     <header className="w-full bg-white border-b border-gray-100">
@@ -15,30 +12,23 @@ const Header = () => {
         {/* Меню */}
         <nav className="flex-1 flex justify-center gap-8 text-[#1A3E8A] font-medium text-base">
           <a href="/news" className="hover:text-blue-900 transition-colors">Новости</a>
-          <a href="/about" className="hover:text-blue-900 transition-colors">О школе</a>
-          <a href="/people" className="hover:text-blue-900 transition-colors">Выпускники</a>
+          <a href="/timeline" className="hover:text-blue-900 transition-colors">Лента Времени</a>
+          <a href="/people" className="hover:text-blue-900 transition-colors">Люди</a>
           <a href="/fund" className="hover:text-blue-900 transition-colors">Фонд</a>
           <a href="/contacts" className="hover:text-blue-900 transition-colors">Контакты</a>
         </nav>
-        {/* Справа: кнопка или иконка */}
+        {/* Справа: кнопка 'Личный кабинет' */}
         <div>
-          {isLoggedIn ? (
-            <a href="/profile" aria-label="Профиль">
-              <img
-                src="/img/icon-people.svg"
-                alt="Профиль"
-                className="w-10 h-10 rounded-full bg-[#1A3E8A] p-2 hover:bg-blue-900 transition-colors"
-              />
-            </a>
-          ) : (
-            <a
-              href="/login"
-              className="flex items-center gap-2 bg-[#1A3E8A] text-white px-6 py-2 rounded-lg font-medium shadow hover:bg-blue-900 transition-colors"
-              aria-label="Войти"
-            >
-              Войти
-            </a>
-          )}
+          <a
+            href="/profile"
+            className="flex items-center gap-2 bg-[#1A3E8A] text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-900 transition-colors"
+            aria-label="Личный кабинет"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25v-1.125A2.625 2.625 0 017.125 16.5h9.75a2.625 2.625 0 012.625 2.625v1.125" />
+            </svg>
+            Личный кабинет
+          </a>
         </div>
       </div>
     </header>
