@@ -4,7 +4,7 @@ import PartnerCard from '../components/PartnerCard';
 import ContactForm from '../components/ContactForm';
 import FeedbackModal from '../components/FeedbackModal';
 import Footer from '../components/Footer';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope, FaClock } from 'react-icons/fa';
 import Button from '../components/Button';
@@ -17,63 +17,89 @@ import {
   GiftIcon,
   PeopleIcon,
   SiteIcon,
-  TelegramIcon,
   DonateIcon,
   OpenDoorIcon,
   CameraIcon,
-  MapIcon
+  MapIcon,
+  TelegramIcon
 } from '../icons/AllIcons';
 import GiftCard from '../components/GiftCard';
 import VisitForm from '../components/VisitForm';
+import { getHomePage } from '../api/api';
 
-const news = [
-  { id: 1, image: '', title: 'Олимпиада по математике – 5 призеров!', date: '4 июня 2025', description: 'Наши ученики заняли призовые места на городской олимпиаде.' },
-  { id: 2, image: '', title: 'Выпускной 2024 – фототчет', date: '4 июня 2025', description: 'Яркие моменты торжественного выпускного вечера.' },
-  { id: 3, image: '', title: 'Набор в театральную студию', date: '4 июня 2025', description: 'Приглашаем учеников 5–11 классов в новую театральную студию.' },
-  { id: 1, image: '', title: 'Олимпиада по математике – 5 призеров!', date: '4 июня 2025', description: 'Наши ученики заняли призовые места на городской олимпиаде.' },
-  { id: 2, image: '', title: 'Выпускной 2024 – фототчет', date: '4 июня 2025', description: 'Яркие моменты торжественного выпускного вечера.' },
-  { id: 3, image: '', title: 'Набор в театральную студию', date: '4 июня 2025', description: 'Приглашаем учеников 5–11 классов в новую театральную студию.вввввввввв ы  вы выывввввввы вывыыыыыыыыы вывввввввввввввввввввввл д лл д лл лвлвддвд дж ж жжэ эвэ ввы овылл овылво  вдывлд ылвж дыж двыжэдв эыждв эыжв эыжв эыжвэ жывэ жыэвжэ' },
-];
-const products = [
-  { id: 1, image: '/img/book.png', title: 'Издание "История гимназии"', price: '', description: 'Эксклюзивное издание к 30-летию гимназии' },
-  { id: 2, image: '/img/badge.png', title: 'Фирменный значок выпускника', price: '', description: 'Эксклюзивный дизайн для участников программы' },
-];
-const partners = [
-  { id: 1, name: 'IT-компания "ТехноЛаб"', logo: '', description: 'Инновационная IT-компания, участвующая в образовательных проектах', link: 'https://technolab.ru' },
-  { id: 2, name: 'IT-компания "ТехноЛаб"', logo: '', description: 'Инновационная IT-компания, участвующая в образовательных проектах', link: 'https://technolab.ru' },
-  { id: 1, name: 'IT-компания "ТехноЛаб"', logo: '', description: 'Инновационная IT-компания, участвующая в образовательных проектах', link: 'https://technolab.ru' },
-  { id: 2, name: 'IT-компания "ТехноЛаб"', logo: '', description: 'Инновационная IT-компания, участвующая в образовательных проектах', link: 'https://technolab.ru' },
-  { id: 1, name: 'IT-компания "ТехноЛаб"', logo: '', description: 'Инновационная IT-компания, участвующая в образовательных проектах', link: 'https://technolab.ru' },
-  { id: 2, name: 'IT-компания "ТехноЛаб"', logo: '', description: 'Инновационная IT-компания, участвующая в образовательных проектах', link: 'https://technolab.ru' },
-];
+// Типизация ответа с бэка (минимально необходимая)
+type StrapiMedia = { data?: { attributes: { url: string } } };
+type Partner = { Name: string; Description: string; Logo?: StrapiMedia; Link?: string };
+type Resource = { Title: string; Link: string };
+type Gift = { Name: string; Photo?: StrapiMedia };
+type Contact = { Logo?: StrapiMedia; Title: string; Phone: string; Email: string };
+type HomePageData = {
+  Partners?: Partner[];
+  Gifts?: Gift[];
+  Resources?: Resource[];
+  Contacts?: Contact[];
+};
 
-const timelineEvents = [
-  { year: '1990', text: 'Основание гимназии' },
-  { year: '2000', text: 'Первые медалисты' },
-  { year: '2010', text: 'Новый корпус' },
-  { year: '2020', text: 'Онлайн обучение' },
-];
-
-const resources = [
-  {
-    name: 'Телеграм-канал',
-    icon: <TelegramIcon className="w-10 h-10" />,
-    link: 'https://t.me/',
-  },
-  {
-    name: 'Официальный сайт',
-    icon: <SiteIcon className="w-10 h-10" />,
-    link: 'https://school-site.ru/',
-  },
-  // Добавьте другие ресурсы по необходимости
-];
+type NewsItem = { title: string; date: string; description: string; image?: string };
 
 const HomePage = () => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedNews, setSelectedNews] = useState<typeof news[0] | null>(null);
+  const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
   const [visitModalOpen, setVisitModalOpen] = useState(false);
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const [data, setData] = useState<HomePageData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setLoading(true);
+    getHomePage()
+      .then((res) => {
+        setData(res as HomePageData);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError('Ошибка загрузки данных');
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <div className="flex justify-center items-center min-h-screen">Загрузка...</div>;
+  if (error) return <div className="flex justify-center items-center min-h-screen text-red-500">{error}</div>;
+  if (!data) return null;
+
+  // Преобразование данных из Strapi
+  const partners = data.Partners?.map((p) => ({
+    name: p.Name,
+    description: p.Description,
+    logo: p.Logo?.data ? p.Logo.data.attributes.url : '',
+    link: p.Link || '#',
+  })) || [];
+
+  const resources = data.Resources?.map((r) => ({
+    title: r.Title,
+    link: r.Link,
+  })) || [];
+
+  const news = [
+    { id: 1, image: '', title: 'Олимпиада по математике – 5 призеров!', date: '4 июня 2025', description: 'Наши ученики заняли призовые места на городской олимпиаде.' },
+    { id: 2, image: '', title: 'Выпускной 2024 – фототчет', date: '4 июня 2025', description: 'Яркие моменты торжественного выпускного вечера.' },
+    { id: 3, image: '', title: 'Набор в театральную студию', date: '4 июня 2025', description: 'Приглашаем учеников 5–11 классов в новую театральную студию.' },
+    { id: 1, image: '', title: 'Олимпиада по математике – 5 призеров!', date: '4 июня 2025', description: 'Наши ученики заняли призовые места на городской олимпиаде.' },
+    { id: 2, image: '', title: 'Выпускной 2024 – фототчет', date: '4 июня 2025', description: 'Яркие моменты торжественного выпускного вечера.' },
+    { id: 3, image: '', title: 'Набор в театральную студию', date: '4 июня 2025', description: 'Приглашаем учеников 5–11 классов в новую театральную студию.вввввввввв ы  вы выывввввввы вывыыыыыыыыы вывввввввввввввввввввввл д лл д лл лвлвддвд дж ж жжэ эвэ ввы овылл овылво  вдывлд ылвж дыж двыжэдв эыждв эыжв эыжв эыжвэ жывэ жыэвжэ' },
+  ];
+  const products = [
+    { id: 1, image: '/img/book.png', title: 'Издание "История гимназии"', price: '', description: 'Эксклюзивное издание к 30-летию гимназии' },
+    { id: 2, image: '/img/badge.png', title: 'Фирменный значок выпускника', price: '', description: 'Эксклюзивный дизайн для участников программы' },
+  ];
+  const timelineEvents = [
+    { year: '1990', text: 'Основание гимназии' },
+    { year: '2000', text: 'Первые медалисты' },
+    { year: '2010', text: 'Новый корпус' },
+    { year: '2020', text: 'Онлайн обучение' },
+  ];
 
   return (
     <div className="bg-bg min-h-screen flex flex-col">
@@ -247,7 +273,7 @@ const HomePage = () => {
                 title={item.title}
                 date={item.date}
                 description={item.description}
-                onClick={() => { setSelectedNews(item); setModalOpen(true); }}
+                onClick={() => { setSelectedNews(item as NewsItem); setModalOpen(true); }}
               />
           ))}
         </Carousel>
@@ -277,7 +303,7 @@ const HomePage = () => {
                   key={idx}
                   logo={p.logo}
                   name={p.name}
-                  description={p.description || 'Инновационная IT-компания, участвующая в образовательных проектах'}
+                  description={p.description}
                   link={p.link}
                 />
               ))}
@@ -300,9 +326,12 @@ const HomePage = () => {
                   style={{ flex: `1 1 ${100 / resources.length}%`, maxWidth: 180 }}
                 >
                   <div className="w-20 h-20 rounded-2xl bg-[#DBEAFE] flex items-center justify-center mb-2 transition-transform group-hover:scale-105">
-                    {res.icon}
+                    {res.title.includes('Telegram')? (
+                      <TelegramIcon className="w-10 h-10" />
+                    ): 
+                    (<SiteIcon className="w-10 h-10" />)}
                   </div>
-                  <div className="text-[#1E3A8A] text-lg font-medium text-center group-hover:underline">{res.name}</div>
+                  <div className="text-[#1E3A8A] text-lg font-medium text-center group-hover:underline">{res.title}</div>
                 </a>
               ))}
             </div>
@@ -318,9 +347,13 @@ const HomePage = () => {
                   tabIndex={0}
                 >
                   <div className="w-20 h-20 rounded-2xl bg-[#DBEAFE] flex items-center justify-center mb-2 transition-transform group-hover:scale-105">
-                    {res.icon}
+                    {res.title.includes('Telegram')? (
+                      <TelegramIcon className="w-10 h-10" />
+                    ): 
+                    (<SiteIcon className="w-10 h-10" />)}
+                    
                   </div>
-                  <div className="text-[#1E3A8A] text-lg font-medium text-center group-hover:underline">{res.name}</div>
+                  <div className="text-[#1E3A8A] text-lg font-medium text-center group-hover:underline">{res.title}</div>
                 </a>
               ))}
             </Carousel>

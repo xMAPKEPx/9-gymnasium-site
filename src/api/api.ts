@@ -16,9 +16,8 @@ export const getNews = async (documentId : string) => {
 }
 
 export const getHomePage = async () => {
-  const res = await fetch('/api/home-page?populate=deep,3');
-  const json = await res.json();
-  const data = json.data?.attributes;
+  const res = await api.get('/api/home-page?populate=*');
+  const data = res.data?.data;
   return data;
 }
 
