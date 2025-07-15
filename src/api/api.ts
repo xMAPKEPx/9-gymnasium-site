@@ -21,6 +21,14 @@ export const getHomePage = async () => {
   return data;
 }
 
+export const getTimelines = async () => {
+  const res = await api.get(
+    '/api/timelines?populate[Events][populate]=*'
+  );
+  
+  return res.data?.data;
+};
+
 export const postVisit = async (visitData: {
   Full_name: string;
   Graduate_year: number;

@@ -104,9 +104,9 @@ const HomePage = () => {
   return (
     <div className="bg-bg min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 w-full">
+      <main className="flex-1 w-full px-[13rem]">
         {/* Верхний блок: Лента времени, Фото, Люди Девятки */}
-        <section className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 px-4 py-8">
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-8 py-8">
           {/* Лента времени */}
           <div className="bg-white rounded-2xl shadow flex flex-col min-h-[348px] h-full overflow-hidden">
             {/* Верхняя часть */}
@@ -197,7 +197,7 @@ const HomePage = () => {
           </div>
         </section>
         {/* Баннер */}
-        <section className="max-w-7xl mx-auto px-4 mb-8">
+        <section className="mb-8">
           <div className="bg-gradient-to-r from-[#1A56DB] to-[#223F93] rounded-2xl px-10 py-10 flex flex-col md:flex-row items-center justify-between min-h-[220px]">
             {/* Левая часть: текст и кнопка */}
             <div className="flex-1 flex flex-col items-start justify-center">
@@ -219,7 +219,7 @@ const HomePage = () => {
             </div>
           </div>
         </section>
-        <section className="max-w-7xl mx-auto px-4 mb-10">
+        <section className="mb-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Карточка 1 */}
             <div className="bg-[#F2F7FF] rounded-2xl p-8 flex flex-col items-center text-center shadow">
@@ -254,7 +254,7 @@ const HomePage = () => {
           </div>
         </section>
         {/* Новости */}
-        <section className="max-w-7xl mx-auto px-4 mb-8">
+        <section className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl md:text-3xl font-bold text-primary">Новости и анонсы мероприятий</h2>
             <button
@@ -279,7 +279,7 @@ const HomePage = () => {
         </Carousel>
         </section>
         {/* Подарки */}
-        <section className="flex flex-col items-center max-w-7xl mx-auto px-4 mb-8">
+        <section className="flex flex-col items-center mb-8">
           <div className="w-full bg-white rounded-3xl shadow-lg px-4 md:px-12 py-10 flex flex-col items-center">
             <div className="flex items-center justify-center gap-2 mb-10">
               <span className="font-bold text-2xl md:text-4xl text-[#1A3E8A]">Сделай взнос в Эндаумент и получи подарок</span>
@@ -294,7 +294,7 @@ const HomePage = () => {
           </div>
         </section>
         {/* Партнеры */}
-        <section className="max-w-7xl mx-auto px-4 mb-8">
+        <section className="mb-8">
           <div className="w-full bg-white rounded-3xl shadow-lg px-4 md:px-12 py-10 flex flex-col items-center">
             <h2 className="font-bold text-3xl md:text-4xl text-[#1A3E8A] mb-10 text-center">Партнеры</h2>
             <Carousel itemsToShow={5} gap={32} className="flex flex-row justify-center items-center w-full max-w-7xl">
@@ -311,7 +311,7 @@ const HomePage = () => {
           </div>
         </section>
         {/* Ресурсы */}
-        <section className="max-w-7xl mx-auto px-4 mb-8">
+        <section className="mb-8">
           <h2 className="font-bold text-3xl md:text-4xl text-[#1A3E8A] mb-10 text-center">Наши ресурсы</h2>
           {resources.length <= 5 ? (
             <div className="flex flex-row justify-center items-center gap-8 w-full">
@@ -360,7 +360,7 @@ const HomePage = () => {
           )}
         </section>
         {/* Контакты */}
-        <section className="w-full bg-[#F2F7FF] py-12">
+        <section className="w-full bg-[#F2F7FF] py-12 px-[13rem]">
           <h2 className="text-3xl font-bold text-center text-[#1A3E8A] mb-10">Контакты</h2>
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 px-4">
             {/* Левая карточка */}

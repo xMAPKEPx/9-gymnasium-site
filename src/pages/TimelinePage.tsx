@@ -1,51 +1,145 @@
 import Header from '../components/Header';
 import SectionTitle from '../components/SectionTitle';
-import TimelineItem from '../components/TimelineItem';
-import Tabs from '../components/Tabs';
-import Pagination from '../components/Pagination';
 import Footer from '../components/Footer';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { getTimelines } from '../api/api';
+import Loader from '../components/Loader';
+import type { ContentImage } from '../types/NewsTypes';
+import { getImageUrl } from '../utils';
 
-const timelineEvents = [
-  { year: '2024', title: 'Юбилей школы', description: 'Проведён большой праздник, посвящённый 50-летию гимназии.' },
-  { year: '2022', title: 'Открытие нового корпуса', description: 'Запущен современный учебный корпус с лабораториями.' },
-  { year: '2020', title: 'Победа на олимпиаде', description: 'Команда школы заняла 1 место на городской олимпиаде.' },
-  { year: '2018', title: 'Запуск эндаумент-фонда', description: 'Создан фонд поддержки талантливых учеников.' },
-  { year: '2015', title: 'Выпуск первого набора', description: 'Выпущен первый набор профильных классов.' },
-];
+interface TimelineEvent {
+  id: string;
+  Title: string;
+  Type?: string;
+  Content?: string | null;
+  Caption?: string | null;
+  Image?: ContentImage | null;
+  Gallery?: ContentImage[] | null
+  // Image, Gallery, Video — если появятся, добавить сюда
+}
 
-const tabs = [
-  { label: 'Все события', value: 'all' },
-  { label: 'Юбилеи', value: 'jubilee' },
-  { label: 'Победы', value: 'victory' },
-];
+interface Timeline {
+  id: string;
+  Title: string;
+  Description?: string;
+  Start_year?: number;
+  End_year?: number;
+  Events?: TimelineEvent[];
+}
 
 const TimelinePage = () => {
-  const [tab, setTab] = useState('all');
-  const [page, setPage] = useState(1);
-  const pageSize = 3;
-  const filtered = timelineEvents.filter(e => tab === 'all' || e.title.includes(tabs.find(t => t.value === tab)?.label || ''));
-  const pageCount = Math.ceil(filtered.length / pageSize);
-  const eventsToShow = filtered.slice((page - 1) * pageSize, page * pageSize);
+  const [epoch, setEpoch] = useState<string>('');
+  const [timelines, setTimelines] = useState<Timeline[]>([]);
+  const [loading, setLoading] = useState(true);
+  const mainRef = useRef<HTMLDivElement>(null);
+
+  // Загрузка эпох с сервера
+  useEffect(() => {
+    getTimelines().then((data) => {
+      setTimelines(data || []);
+      setEpoch((data && data[0]?.id) || '');
+      setLoading(false);
+    });
+  }, []);
+
+  // Скролл к эпохе
+  const handleMenuClick = (value: string) => {
+    setEpoch(value);
+    const el = document.getElementById(value);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  // Подсветка активной эпохи при скролле
+  useEffect(() => {
+    const handleScroll = () => {
+      const offsets = timelines.map(e => {
+        const el = document.getElementById(e.id);
+        return {
+          key: e.id,
+          top: el ? el.getBoundingClientRect().top : Infinity
+        };
+      });
+      const visible = offsets.filter(o => o.top < window.innerHeight / 2 && o.top > 80);
+      if (visible.length > 0) {
+        setEpoch(visible[visible.length - 1].key);
+      } else {
+        const above = offsets.filter(o => o.top <= 80);
+        if (above.length > 0) setEpoch(above[above.length - 1].key);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [timelines]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-white">
+        <Loader />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex flex-col bg-bg text-gray-900">
+    <div className="min-h-screen w-full flex flex-col bg-white text-gray-900">
       <Header />
-      <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8">
-        <SectionTitle as="h1" className="mb-8">Лента времени</SectionTitle>
-        <Tabs tabs={tabs} value={tab} onChange={setTab} className="mb-8" />
-        <div className="relative pl-8 border-l-2 border-gray-200">
-          {eventsToShow.map((event, i) => (
-            <TimelineItem
-              key={event.year + event.title}
-              year={event.year}
-              title={event.title}
-              description={event.description}
-              active={i === 0 && page === 1}
-            />
+      <main ref={mainRef} className="flex-1 w-full grid grid-cols-[220px_1fr] gap-8 px-[13rem] py-12">
+        {/* Левое меню */}
+        <aside className="col-span-1">
+          <nav className="sticky top-24 flex flex-col gap-2 bg-white rounded-xl border border-blue-100 p-4">
+            {timelines.map(e => (
+              <button
+                key={e.id}
+                className={`px-4 py-2 rounded-lg font-semibold text-base text-left transition-all duration-200 ${epoch === e.id ? 'bg-blue-100 text-blue-900' : 'hover:bg-blue-50 text-blue-800'}`}
+                onClick={() => handleMenuClick(e.id)}
+              >
+                {e.Title || 'Без названия'}
+              </button>
+            ))}
+          </nav>
+        </aside>
+        {/* Контент всех эпох */}
+        <section className="col-span-1 flex flex-col gap-16">
+          {timelines.map(epoch => (
+            <div key={epoch.id} id={epoch.id} className="flex gap-8">
+              {/* Sticky заголовок и описание только в рамках эпохи */}
+              <div className="w-[320px] flex-shrink-0">
+                <div className="sticky top-24 z-10 bg-white pb-4">
+                  <SectionTitle as="h2" className="mb-2 text-2xl md:text-3xl text-left font-bold text-blue-900">{epoch.Title || 'Без названия'}</SectionTitle>
+                  {epoch.Description && (
+                    <div className="text-gray-600 mb-4 max-w-2xl leading-relaxed">{epoch.Description}</div>
+                  )}
+                </div>
+              </div>
+              {/* Карточки событий */}
+              <div className="flex-1 flex flex-col gap-8">
+                {(epoch.Events || []).map(ev => {
+                  return (
+                    <div key={ev.id} className="bg-yellow-50 rounded-xl shadow p-6 flex flex-col items-center">
+                      {ev.Type !== 'Article' ? (
+                        <>
+                          {ev.Image?.url && (
+                            <img
+                              src={getImageUrl(ev.Image.url) || undefined}
+                              alt={ev.Title || 'Изображение'}
+                              className="rounded-lg mb-4 max-w-full h-auto"
+                            />
+                          )}
+                          <div className="font-bold text-lg text-gray-900 mb-1">{ev.Title}</div>
+                          {ev.Caption && <div className="text-gray-500 text-sm text-center mt-2">{ev.Caption}</div>}
+                        </>
+                      ) : (
+                        <>
+                          <div className="font-bold text-lg text-gray-900 mb-1">{ev.Title}</div>
+                          {ev.Content && <div className="text-gray-700 text-base text-center max-w-2xl">{ev.Content}</div>}
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           ))}
-        </div>
-        <Pagination page={page} pageCount={pageCount} onPageChange={setPage} className="mt-8" />
+        </section>
       </main>
       <Footer />
     </div>

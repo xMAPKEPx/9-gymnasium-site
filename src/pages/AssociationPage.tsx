@@ -18,7 +18,7 @@ const benefits = [
 const AssociationPage = () => (
   <div className="min-h-screen flex flex-col bg-bg text-gray-900">
     <Header />
-    <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-8">
+    <main className="flex-1 w-full px-[13rem] py-8">
       <Banner
         title="Ассоциация выпускников и эндаумент-фонд"
         subtitle="Вместе мы создаём возможности для будущих поколений, поддерживаем традиции и развиваем школу."
