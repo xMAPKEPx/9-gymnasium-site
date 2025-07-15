@@ -1,20 +1,18 @@
 import { type FC } from 'react';
-import { FaTelegramPlane, FaVk } from 'react-icons/fa';
-import { HiOutlineBuildingLibrary } from 'react-icons/hi2';
+import { TelegramIcon } from '../icons/AllIcons';
+import { FaVk } from 'react-icons/fa';
 
 const Footer: FC = () => (
-  <footer className="w-full bg-primary pt-8 pb-4 text-white">
-    <div className="max-w-7xl mx-auto flex flex-col gap-4 px-4">
+  <footer className="w-full bg-[#20409A] pt-8 pb-4 text-white">
+    <div className="flex flex-col gap-4 px-4 w-full">
       <div className="flex flex-col md:flex-row items-center justify-between w-full">
         {/* Логотип и название */}
         <div className="flex items-center gap-4 mb-4 md:mb-0">
-          <span className="bg-white rounded-full flex items-center justify-center w-14 h-14">
-            <HiOutlineBuildingLibrary className="text-primary text-3xl" />
-          </span>
+            <img src="/img/logo.svg" alt="Логотип" className="w-12 h-12" />
           <span className="text-2xl font-bold text-white">Гимназия №9</span>
         </div>
         {/* Меню */}
-        <nav className="flex gap-6 text-base font-normal">
+        <nav className="flex gap-8 text-base font-normal">
           <a href="#news" className="hover:underline">Новости</a>
           <a href="#about" className="hover:underline">О школе</a>
           <a href="#alumni" className="hover:underline">Выпускники</a>
@@ -23,11 +21,11 @@ const Footer: FC = () => (
         </nav>
         {/* Соцсети */}
         <div className="flex gap-4">
-          <a href="https://t.me/" target="_blank" rel="noopener noreferrer" aria-label="Telegram" className="bg-white/20 hover:bg-white/40 rounded-full w-9 h-9 flex items-center justify-center transition-colors">
-            <FaTelegramPlane className="text-white text-xl" />
+          <a href="https://t.me/" target="_blank" rel="noopener noreferrer" aria-label="Telegram" className="bg-white rounded-full w-9 h-9 flex items-center justify-center transition-colors">
+            <TelegramIcon className="w-5 h-5" />
           </a>
-          <a href="https://vk.com/" target="_blank" rel="noopener noreferrer" aria-label="VK" className="bg-white/20 hover:bg-white/40 rounded-full w-9 h-9 flex items-center justify-center transition-colors">
-            <FaVk className="text-white text-xl" />
+          <a href="https://vk.com/" target="_blank" rel="noopener noreferrer" aria-label="VK" className="bg-white rounded-full w-9 h-9 flex items-center justify-center transition-colors">
+            <FaVk className="w-5 h-5 text-[#20409A]" />
           </a>
         </div>
       </div>

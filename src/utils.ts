@@ -1,5 +1,4 @@
-import { DEV_SERVER } from "./api/api";
-import { API_URL } from "./const/api_const";
+import { API_URL, DEV_SERVER } from "./const/api_const";
 
 // Функция для формирования полного URL изображения
 export const getImageUrl = (imagePath: string | null | undefined): string | null => {
