@@ -21,3 +21,34 @@ export const getHomePage = async () => {
   return data;
 }
 
+export const postVisit = async (visitData: {
+  Full_name: string;
+  Graduate_year: number;
+  Date: string;
+  Time: string;
+}) => {
+  const response = await api.post('/api/visits', visitData);
+  return response.data;
+}
+
+export const postMemory = async (memoryData: {
+  Full_name: string;
+  Graduate_year: number;
+  Section: string;
+  Story: string;
+  Photo?: File | null;
+}) => {
+  const formData = new FormData();
+  formData.append('Full_name', memoryData.Full_name);
+  formData.append('Graduate_year', String(memoryData.Graduate_year));
+  formData.append('Section', memoryData.Section);
+  formData.append('Story', memoryData.Story);
+  if (memoryData.Photo) {
+    formData.append('Photo', memoryData.Photo);
+  }
+  const response = await api.post('/api/memories', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return response.data;
+};
+

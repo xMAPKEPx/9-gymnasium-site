@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { postVisit } from '../api/api';
 
 interface VisitFormProps {
   open: boolean;
@@ -111,15 +112,24 @@ const VisitForm = ({ open, onClose }: VisitFormProps) => {
     setErrors({ ...errors, [e.target.name]: '' });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors = validate();
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-    setSubmitted(true);
-    // Здесь отправка формы
+    try {
+      await postVisit({
+        Full_name: values.name,
+        Graduate_year: Number(values.year),
+        Date: values.date,
+        Time: values.time,
+      });
+      setSubmitted(true);
+    } catch {
+      setErrors({ form: 'Ошибка при отправке. Попробуйте позже.' });
+    }
   };
 
   const handleModalClick = (e: React.MouseEvent) => {
@@ -143,6 +153,9 @@ const VisitForm = ({ open, onClose }: VisitFormProps) => {
         <button className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl" onClick={onClose} aria-label="Закрыть">×</button>
         <h2 className="text-2xl font-bold text-center text-[#1A3E8A] mb-8">Запись на посещение</h2>
         <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+          {errors.form && (
+            <div className="text-red-500 text-sm mb-2">{errors.form}</div>
+          )}
           <div className="flex flex-col gap-1">
             <label htmlFor="name" className="font-medium text-gray-700 mb-1">ФИО</label>
             <input
