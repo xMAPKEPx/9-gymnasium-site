@@ -9,7 +9,7 @@ interface NewsCardProps {
   onClick?: () => void;
 }
 
-const COLLAPSED = 'max-h-[180px]';
+const COLLAPSED = 'max-h-[400px]';
 const EXPANDED = 'max-h-[900px]';
 
 const NewsCard = ({ image, title, date, description, onClick }: NewsCardProps) => {
@@ -32,7 +32,7 @@ const NewsCard = ({ image, title, date, description, onClick }: NewsCardProps) =
 
   return (
     <Card
-      className="w-full max-w-[370px] min-h-[400px] p-0 rounded-2xl overflow-hidden cursor-pointer transition-transform hover:-translate-y-1"
+      className="w-full max-w-[480px] min-h-[400px] p-0 rounded-2xl overflow-hidden cursor-pointer transition-transform hover:-translate-y-1"
       onClick={onClick}
       ariaLabel={`Открыть новость: ${title}`}
       onMouseEnter={handleMouseEnter}

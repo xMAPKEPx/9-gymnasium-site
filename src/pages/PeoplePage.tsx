@@ -53,7 +53,7 @@ const PeoplePage = () => {
   return (
     <div className="min-h-screen flex flex-col bg-bg text-gray-900">
       <Header />
-      <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-8">
+      <main className="flex-1 w-full px-[13rem] py-8">
         <SectionTitle as="h1" className="mb-8">Люди девятки</SectionTitle>
         <Tabs tabs={tabs} value={tab} onChange={setTab} className="mb-8" />
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mb-8">
