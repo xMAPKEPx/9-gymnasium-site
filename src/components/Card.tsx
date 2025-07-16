@@ -10,7 +10,7 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 
 const Card: FC<CardProps> = ({ children, className, ariaLabel, onClick, ...props }) => (
   <div
-    className={clsx('bg-white rounded-2xl shadow-card', className)}
+    className={clsx('bg-white rounded-2xl shadow-lg border border-gray-200', className)}
     aria-label={ariaLabel}
     onClick={onClick}
     {...props}

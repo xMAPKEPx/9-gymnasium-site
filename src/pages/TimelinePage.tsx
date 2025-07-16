@@ -1,7 +1,7 @@
 import Header from '../components/Header';
 import SectionTitle from '../components/SectionTitle';
 import Footer from '../components/Footer';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { getTimelines } from '../api/api';
 import Loader from '../components/Loader';
 import type { ContentImage } from '../types/NewsTypes';
@@ -42,20 +42,24 @@ const TimelinePage = () => {
     });
   }, []);
 
+  // Мемоизация id эпох для быстрого поиска
+  const timelineIds = useMemo(() => timelines.map(e => e.id), [timelines]);
+
   // Скролл к эпохе
-  const handleMenuClick = (value: string) => {
+  const handleMenuClick = useCallback((value: string) => {
     setEpoch(value);
     const el = document.getElementById(value);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
+  }, []);
 
   // Подсветка активной эпохи при скролле
   useEffect(() => {
+    if (!timelines.length) return;
     const handleScroll = () => {
-      const offsets = timelines.map(e => {
-        const el = document.getElementById(e.id);
+      const offsets = timelineIds.map(id => {
+        const el = document.getElementById(id);
         return {
-          key: e.id,
+          key: id,
           top: el ? el.getBoundingClientRect().top : Infinity
         };
       });
@@ -69,7 +73,7 @@ const TimelinePage = () => {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [timelines]);
+  }, [timelineIds]);
 
   if (loading) {
     return (

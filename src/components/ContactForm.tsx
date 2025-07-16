@@ -1,25 +1,25 @@
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 
 const ContactForm = () => {
   const [values, setValues] = useState({ name: '', phone: '', subject: '', message: '' });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [submitted, setSubmitted] = useState(false);
 
-  const validate = () => {
+  const validate = useCallback(() => {
     const newErrors: { [key: string]: string } = {};
     if (!values.name) newErrors.name = 'Введите имя';
     if (!values.phone) newErrors.phone = 'Введите телефон';
     else if (!/^[-+() 0-9]+$/.test(values.phone)) newErrors.phone = 'Некорректный телефон';
     if (!values.message) newErrors.message = 'Введите сообщение';
     return newErrors;
-  };
+  }, [values]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setValues({ ...values, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: '' });
-  };
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setValues(v => ({ ...v, [e.target.name]: e.target.value }));
+    setErrors(err => ({ ...err, [e.target.name]: '' }));
+  }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     const newErrors = validate();
     if (Object.keys(newErrors).length > 0) {
@@ -28,7 +28,7 @@ const ContactForm = () => {
     }
     setSubmitted(true);
     // Здесь отправка формы
-  };
+  }, [validate]);
 
   if (submitted) {
     return <div className="text-green-600 font-medium py-4 text-center">Спасибо за ваше сообщение!</div>;

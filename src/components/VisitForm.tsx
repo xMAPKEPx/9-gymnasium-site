@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { postVisit } from '../api/api';
 
 interface VisitFormProps {
@@ -37,31 +37,35 @@ const VisitForm = ({ open, onClose }: VisitFormProps) => {
   const [values, setValues] = useState(initialState);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [submitted, setSubmitted] = useState(false);
-  const currentYear = new Date().getFullYear();
+  const currentYear = useMemo(() => new Date().getFullYear(), []);
 
   // Ограничения для выбора даты только четвергами
-  const minDate = getNextThursday();
-  const maxDate = new Date(minDate);
-  maxDate.setFullYear(maxDate.getFullYear() + 1);
+  const minDate = useMemo(() => getNextThursday(), []);
+  const maxDate = useMemo(() => {
+    const d = new Date(minDate);
+    d.setFullYear(d.getFullYear() + 1);
+    return d;
+  }, [minDate]);
 
   // --- ВРЕМЕННЫЕ ОГРАНИЧЕНИЯ ---
-  const now = new Date();
-  const todayStr = formatDate(now);
+  const now = useMemo(() => new Date(), []);
+  const todayStr = useMemo(() => formatDate(now), [now]);
   const isToday = values.date === todayStr;
   const isTodayThursday = now.getDay() === 4 && values.date === todayStr;
   const after15 = now.getHours() > 15 || (now.getHours() === 15 && now.getMinutes() > 0);
 
   // Если сегодня четверг и уже после 15:00 — нельзя выбрать сегодня
-  let realMinDate = minDate;
-  if (isTodayThursday && after15) {
-    // minDate становится следующий четверг
-    const next = new Date(minDate);
-    next.setDate(next.getDate() + 7);
-    realMinDate = next;
-  }
+  const realMinDate = useMemo(() => {
+    if (isTodayThursday && after15) {
+      const next = new Date(minDate);
+      next.setDate(next.getDate() + 7);
+      return next;
+    }
+    return minDate;
+  }, [isTodayThursday, after15, minDate]);
 
   // Генерируем опции времени с учётом ограничения "не позднее чем за час до назначенного времени"
-  const getAvailableTimeOptions = () => {
+  const timeOptions = useMemo(() => {
     const options = [];
     let hour = 10;
     let minute = 0;
@@ -70,7 +74,6 @@ const VisitForm = ({ open, onClose }: VisitFormProps) => {
       const m = minute.toString().padStart(2, '0');
       const t = `${h}:${m}`;
       if (isToday) {
-        // Время в формате HH:MM
         const visit = new Date(values.date + 'T' + t);
         const minAllowed = new Date(now.getTime() + 60 * 60 * 1000); // +1 час
         if (visit < minAllowed) {
@@ -84,12 +87,11 @@ const VisitForm = ({ open, onClose }: VisitFormProps) => {
       if (minute === 60) { minute = 0; hour++; }
     }
     return options;
-  };
-  const timeOptions = getAvailableTimeOptions();
+  }, [isToday, values.date, now]);
 
   if (!open) return null;
 
-  const validate = () => {
+  const validate = useCallback(() => {
     const newErrors: { [key: string]: string } = {};
     if (!values.name) newErrors.name = 'Поле обязательно для заполнения';
     const yearNum = Number(values.year);
@@ -105,14 +107,14 @@ const VisitForm = ({ open, onClose }: VisitFormProps) => {
     if (!values.email) newErrors.email = 'Введите почту';
     else if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(values.email)) newErrors.email = 'Некорректная почта';
     return newErrors;
-  };
+  }, [values, currentYear, timeOptions]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setValues({ ...values, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: '' });
-  };
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setValues(v => ({ ...v, [e.target.name]: e.target.value }));
+    setErrors(err => ({ ...err, [e.target.name]: '' }));
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors = validate();
     if (Object.keys(newErrors).length > 0) {
@@ -130,11 +132,11 @@ const VisitForm = ({ open, onClose }: VisitFormProps) => {
     } catch {
       setErrors({ form: 'Ошибка при отправке. Попробуйте позже.' });
     }
-  };
+  }, [validate, values]);
 
-  const handleModalClick = (e: React.MouseEvent) => {
+  const handleModalClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-  };
+  }, []);
 
   if (submitted) {
     return (

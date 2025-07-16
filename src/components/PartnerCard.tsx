@@ -31,13 +31,13 @@ const PartnerCard: FC<PartnerCardProps> = ({ logo, name, description, link }) =>
       href={link}
       target="_blank"
       rel="noopener noreferrer"
-      className="bg-[#F6F8FB] rounded-2xl shadow p-8 flex flex-col items-center w-full max-w-xs mx-auto transition-transform hover:scale-105 focus:scale-105 outline-none cursor-pointer"
+      className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 flex flex-col items-center w-full max-w-xs mx-auto transition-transform hover:scale-105 focus:scale-105 outline-none cursor-pointer"
       tabIndex={0}
     >
       {content}
     </a>
   ) : (
-    <div className="bg-[#F6F8FB] rounded-2xl shadow p-8 flex flex-col items-center w-full max-w-xs mx-auto">
+    <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 flex flex-col items-center w-full max-w-xs mx-auto">
       {content}
     </div>
   );

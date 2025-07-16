@@ -2,7 +2,7 @@ import Header from '../components/Header';
 import PersonCard from '../components/PersonCard';
 import Footer from '../components/Footer';
 import Dropdown from '../components/Dropdown';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { getDecades, getYearsByDecade, getYearById } from '../api/api';
 import type { Person, SchoolClass } from '../types/people';
 import { getImageUrl } from '../utils';
@@ -10,7 +10,6 @@ import FeedbackModal from '../components/FeedbackModal';
 
 const PeoplePage = () => {
   const [decade, setDecade] = useState('');
-  const [decades, setDecades] = useState<{ label: string; value: string }[]>([]);
   const [years, setYears] = useState<{ Year: number; documentId: string }[]>([]);
   const [year, setYear] = useState('');
   const [classes, setClasses] = useState<SchoolClass[]>([]);
@@ -20,11 +19,8 @@ const PeoplePage = () => {
   const [loadingClasses, setLoadingClasses] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
 
-  // Инициализация десятилетий
-  useEffect(() => {
-    const d = getDecades().map((v: number) => ({ label: `${v}-${v+9}`, value: String(v) }));
-    setDecades(d);
-  }, []);
+  // Мемоизация десятилетий
+  const decades = useMemo(() => getDecades().map((v: number) => ({ label: `${v}-${v+9}`, value: String(v) })), []);
 
   // Загрузка годов при выборе десятилетия
   useEffect(() => {
@@ -54,8 +50,7 @@ const PeoplePage = () => {
     setPeople([]);
     getYearById(year)
       .then((res) => {
-        const classList = (res?.Classes || []) as SchoolClass[];
-        setClasses(classList);
+        setClasses((res?.Classes || []) as SchoolClass[]);
         setLoadingClasses(false);
       })
       .catch(() => {
@@ -66,18 +61,20 @@ const PeoplePage = () => {
 
   // Фильтрация людей по выбранному классу
   useEffect(() => {
-    if (!classId || !classes.length) return;
+    if (!classId || !classes.length) return setPeople([]);
     const selectedClass = classes.find((c) => typeof c.id === 'number' && c.id === classId);
-    if (selectedClass && selectedClass.Class_persons) {
-      setPeople(selectedClass.Class_persons);
-    } else {
-      setPeople([]);
-    }
+    setPeople(selectedClass?.Class_persons || []);
   }, [classId, classes]);
 
-  // Найти выбранный класс и год
-  const selectedClass = classId ? classes.find((c) => typeof c.id === 'number' && c.id === classId) : null;
-  const yearObj = years.find((y) => y.documentId === year);
+  // Найти выбранный класс и год (мемоизация)
+  const selectedClass = useMemo(() => classId ? classes.find((c) => typeof c.id === 'number' && c.id === classId) : null, [classId, classes]);
+  const yearObj = useMemo(() => years.find((y) => y.documentId === year), [years, year]);
+
+  // Мемоизация опций для фильтров
+  const yearOptions = useMemo(() => years.map((y) => ({ label: y.Year?.toString() || '', value: y.documentId })), [years]);
+  const classOptions = useMemo(() => classes.filter(c => typeof c.id === 'number').map((c) => ({ label: c.Literal, value: String(c.id) })), [classes]);
+
+  const handleClassChange = useCallback((v: string) => setClassId(Number(v)), []);
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-gray-900">
@@ -98,16 +95,16 @@ const PeoplePage = () => {
               className="min-w-[160px] h-10 rounded-lg font-medium text-base"
             />
             <Dropdown
-              options={years.map((y) => ({ label: y.Year?.toString() || '', value: y.documentId }))}
+              options={yearOptions}
               value={year}
               onChange={setYear}
               placeholder={loadingYears ? 'Загрузка...' : 'Год'}
               className="min-w-[160px] h-10 rounded-lg font-medium text-base"
             />
             <Dropdown
-              options={classes.filter(c => typeof c.id === 'number').map((c) => ({ label: c.Literal, value: String(c.id) }))}
+              options={classOptions}
               value={classId ? String(classId) : ''}
-              onChange={v => setClassId(Number(v))}
+              onChange={handleClassChange}
               placeholder={loadingClasses ? 'Загрузка...' : 'Класс'}
               className="min-w-[160px] h-10 rounded-lg font-medium text-base"
               disabled={!classes.length}

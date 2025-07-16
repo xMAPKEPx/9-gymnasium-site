@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { postMemory } from '../api/api';
 
 const SECTIONS = [
@@ -29,7 +29,7 @@ const FeedbackModal = ({ open, onClose, defaultYear }: FeedbackModalProps) => {
   const [submitted, setSubmitted] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const currentYear = new Date().getFullYear();
+  const currentYear = useMemo(() => new Date().getFullYear(), []);
 
   useEffect(() => {
     if (open) {
@@ -39,9 +39,7 @@ const FeedbackModal = ({ open, onClose, defaultYear }: FeedbackModalProps) => {
     }
   }, [open, defaultYear]);
 
-  if (!open) return null;
-
-  const validate = () => {
+  const validate = useCallback(() => {
     const newErrors: { [key: string]: string } = {};
     if (!values.name) newErrors.name = 'Поле обязательно для заполнения';
     if (values.year && (+values.year < 1930 || +values.year > currentYear)) {
@@ -60,43 +58,43 @@ const FeedbackModal = ({ open, onClose, defaultYear }: FeedbackModalProps) => {
       }
     }
     return newErrors;
-  };
+  }, [values, currentYear]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const target = e.target;
     const { name, value } = target;
     if (name === 'photo' && target instanceof HTMLInputElement && target.files) {
-      setValues({ ...values, photo: target.files[0] ? target.files[0] : null });
-      setErrors({ ...errors, photo: '' });
+      setValues(v => ({ ...v, photo: target.files![0] ? target.files![0] : null }));
+      setErrors(err => ({ ...err, photo: '' }));
     } else {
-      setValues({ ...values, [name]: value });
-      setErrors({ ...errors, [name]: '' });
+      setValues(v => ({ ...v, [name]: value }));
+      setErrors(err => ({ ...err, [name]: '' }));
     }
-  };
+  }, []);
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setValues({ ...values, photo: e.dataTransfer.files[0] });
-      setErrors({ ...errors, photo: '' });
+      setValues(v => ({ ...v, photo: e.dataTransfer.files[0] }));
+      setErrors(err => ({ ...err, photo: '' }));
     }
-  };
+  }, []);
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setDragActive(true);
-  };
-  const handleDragLeave = (e: React.DragEvent) => {
+  }, []);
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setDragActive(false);
-  };
+  }, []);
 
-  const handleFileClick = () => {
+  const handleFileClick = useCallback(() => {
     fileInputRef.current?.click();
-  };
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors = validate();
     if (Object.keys(newErrors).length > 0) {
@@ -115,11 +113,14 @@ const FeedbackModal = ({ open, onClose, defaultYear }: FeedbackModalProps) => {
     } catch {
       setErrors({ form: 'Ошибка при отправке. Попробуйте позже.' });
     }
-  };
+  }, [validate, values]);
 
-  const handleModalClick = (e: React.MouseEvent) => {
+  const handleModalClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-  };
+  }, []);
+
+  // --- Условие после всех хуков ---
+  if (!open) return null;
 
   if (submitted) {
     return (
