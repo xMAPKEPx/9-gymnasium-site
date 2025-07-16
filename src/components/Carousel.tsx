@@ -34,7 +34,7 @@ const Carousel: FC<CarouselProps> = ({ children, itemsToShow = 3, gap = 16, clas
   // Обработка перехода к клонам
   useEffect(() => {
     if (!isInfinite || !isTransitioning) return;
-    let timeout: NodeJS.Timeout;
+    let timeout: ReturnType<typeof setTimeout>;
     if (index === 0) {
       timeout = setTimeout(() => {
         setIsTransitioning(false);
@@ -90,7 +90,7 @@ const Carousel: FC<CarouselProps> = ({ children, itemsToShow = 3, gap = 16, clas
           <FaChevronLeft size={22} />
         </button>
       )}
-      <div className="flex overflow-hidden w-full justify-center">
+      <div className="flex overflow-hidden w-full justify-center py-10">
         <div
           ref={trackRef}
           style={{
@@ -99,6 +99,7 @@ const Carousel: FC<CarouselProps> = ({ children, itemsToShow = 3, gap = 16, clas
             transform: `translateX(${translate}%)`,
             transition: isInfinite && isTransitioning ? 'transform 0.3s' : 'none',
             width: '100%',
+            overflow: 'visible',
           }}
           onTransitionEnd={() => {
             if (!isInfinite) return;
@@ -113,8 +114,8 @@ const Carousel: FC<CarouselProps> = ({ children, itemsToShow = 3, gap = 16, clas
           {extendedChildren.map((child, i) => (
             <div
               key={i}
-              className="flex-shrink-0"
               style={{
+                minWidth: cardWidth,
                 maxWidth: cardWidth,
                 flexBasis: cardWidth,
               }}
