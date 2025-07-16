@@ -1,25 +1,35 @@
-import { FC, ReactNode } from 'react';
+import type { FC } from 'react';
+import { getShortName } from '../utils';
 
 interface PersonCardProps {
-  avatarUrl: string;
+  avatarUrl?: string | null;
   name: string;
   role: string;
   description?: string;
-  social?: ReactNode;
 }
 
-const PersonCard: FC<PersonCardProps> = ({ avatarUrl, name, role, description, social }) => (
-  <div className="bg-white rounded-xl shadow-card p-6 flex flex-col items-center text-center transition-all duration-300 hover:shadow-card-lg">
-    <img
-      src={avatarUrl}
-      alt={name}
-      className="w-24 h-24 rounded-full object-cover mb-4 border-4 border-primary shadow-card"
-      loading="lazy"
-    />
-    <div className="font-heading text-lg text-gray-900 mb-1">{name}</div>
-    <div className="text-gray-400 text-sm mb-2">{role}</div>
-    {description && <div className="prose prose-sm text-gray-700 mb-2">{description}</div>}
-    {social && <div className="flex gap-2 justify-center mt-2">{social}</div>}
+const PersonCard: FC<PersonCardProps> = ({ avatarUrl, name, role, description }) => (
+  <div className="bg-white rounded-xl shadow p-0 flex flex-col items-center text-center w-[12.5rem] h-[14.5rem]">
+    <div className="w-24 h-24 rounded-full bg-[#1E3A8A] flex items-center justify-center mt-6 mb-5 overflow-hidden">
+      {avatarUrl ? (
+        <img
+          src={avatarUrl}
+          alt={name}
+          className="w-full h-full object-cover rounded-full"
+        />
+      ) : (
+        <span className="text-white text-2xl font-bold select-none">
+          {name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+        </span>
+      )}
+    </div>
+    <div className="font-bold text-[20px] text-[#1E3A8A] mb-0 leading-tight">{getShortName(name)}</div>
+    {role && (
+      <div className="bg-[#FFF7CC] text-[#B89A00] font-bold text-[16px] rounded-[8px] px-4 h-8 flex items-center justify-center mt-3">
+        {role}
+      </div>
+    )}
+    {description && <div className="text-xs text-gray-500 mt-1 line-clamp-2">{description}</div>}
   </div>
 );
 

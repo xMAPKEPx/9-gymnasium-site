@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { postMemory } from '../api/api';
 
 const SECTIONS = [
@@ -12,6 +12,7 @@ const SECTIONS = [
 interface FeedbackModalProps {
   open: boolean;
   onClose: () => void;
+  defaultYear?: string | number;
 }
 
 const initialState = {
@@ -22,13 +23,21 @@ const initialState = {
   attachTo: '',
 };
 
-const FeedbackModal = ({ open, onClose }: FeedbackModalProps) => {
-  const [values, setValues] = useState(initialState);
+const FeedbackModal = ({ open, onClose, defaultYear }: FeedbackModalProps) => {
+  const [values, setValues] = useState({ ...initialState, year: defaultYear ? String(defaultYear) : '' });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [submitted, setSubmitted] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const currentYear = new Date().getFullYear();
+
+  useEffect(() => {
+    if (open) {
+      setValues({ ...initialState, year: defaultYear ? String(defaultYear) : '' });
+      setErrors({});
+      setSubmitted(false);
+    }
+  }, [open, defaultYear]);
 
   if (!open) return null;
 
