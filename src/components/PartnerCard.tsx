@@ -15,7 +15,7 @@ const CardContent: FC<Omit<PartnerCardProps, 'link'>> = ({ logo, name, descripti
         <PartnerIcon className="w-12 h-12" />
       </div>
     ) : typeof logo === 'string' ? (
-      <img src={logo} alt={name} className="w-20 h-20 object-contain mb-4 rounded-xl bg-[#F3F6FA] p-4" />
+      <img src={logo} alt={name} className="w-20 h-20 object-contain mb-4 rounded-full bg-[#F3F6FA]" />
     ) : (
       <div className="w-20 h-20 flex items-center justify-center mb-4 rounded-xl bg-[#F3F6FA]">{logo}</div>
     )}

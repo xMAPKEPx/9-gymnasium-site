@@ -26,21 +26,8 @@ import {
 import GiftCard from '../components/GiftCard';
 import VisitForm from '../components/VisitForm';
 import { getHomePage } from '../api/api';
-
-// Типизация ответа с бэка (минимально необходимая)
-type StrapiMedia = { data?: { attributes: { url: string } } };
-type Partner = { Name: string; Description: string; Logo?: StrapiMedia; Link?: string };
-type Resource = { Title: string; Link: string };
-type Gift = { Name: string; Photo?: StrapiMedia };
-type Contact = { Logo?: StrapiMedia; Title: string; Phone: string; Email: string };
-type HomePageData = {
-  Partners?: Partner[];
-  Gifts?: Gift[];
-  Resources?: Resource[];
-  Contacts?: Contact[];
-};
-
-type NewsItem = { title: string; date: string; description: string; image?: string };
+import { getImageUrl } from '../utils';
+import type { HomePageData, NewsItem } from '../types/homepage';
 
 const HomePage = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -69,19 +56,9 @@ const HomePage = () => {
   if (error) return <div className="flex justify-center items-center min-h-screen text-red-500">{error}</div>;
   if (!data) return null;
 
-  // Преобразование данных из Strapi
-  const partners = data.Partners?.map((p) => ({
-    name: p.Name,
-    description: p.Description,
-    logo: p.Logo?.data ? p.Logo.data.attributes.url : '',
-    link: p.Link || '#',
-  })) || [];
-
-  const resources = data.Resources?.map((r) => ({
-    title: r.Title,
-    link: r.Link,
-  })) || [];
-
+  const partners = data.Partners || [];
+  const gifts = data.Gifts || [];
+  const resources = data.Resources || [];
   const news = [
     { id: 1, image: '', title: 'Олимпиада по математике – 5 призеров!', date: '4 июня 2025', description: 'Наши ученики заняли призовые места на городской олимпиаде.' },
     { id: 2, image: '', title: 'Выпускной 2024 – фототчет', date: '4 июня 2025', description: 'Яркие моменты торжественного выпускного вечера.' },
@@ -89,10 +66,6 @@ const HomePage = () => {
     { id: 1, image: '', title: 'Олимпиада по математике – 5 призеров!', date: '4 июня 2025', description: 'Наши ученики заняли призовые места на городской олимпиаде.' },
     { id: 2, image: '', title: 'Выпускной 2024 – фототчет', date: '4 июня 2025', description: 'Яркие моменты торжественного выпускного вечера.' },
     { id: 3, image: '', title: 'Набор в театральную студию', date: '4 июня 2025', description: 'Приглашаем учеников 5–11 классов в новую театральную студию.вввввввввв ы  вы выывввввввы вывыыыыыыыыы вывввввввввввввввввввввл д лл д лл лвлвддвд дж ж жжэ эвэ ввы овылл овылво  вдывлд ылвж дыж двыжэдв эыждв эыжв эыжв эыжвэ жывэ жыэвжэ' },
-  ];
-  const products = [
-    { id: 1, image: '/img/book.png', title: 'Издание "История гимназии"', price: '', description: 'Эксклюзивное издание к 30-летию гимназии' },
-    { id: 2, image: '/img/badge.png', title: 'Фирменный значок выпускника', price: '', description: 'Эксклюзивный дизайн для участников программы' },
   ];
   const timelineEvents = [
     { year: '1990', text: 'Основание гимназии' },
@@ -286,8 +259,13 @@ const HomePage = () => {
               <GiftIcon className="w-8 h-8 text-[#EAB308]" />
             </div>
             <Carousel itemsToShow={2} gap={32} className="flex flex-row justify-center items-center w-full max-w-3xl">
-              {products.map(item => (
-                <GiftCard key={item.id} image={item.image} title={item.title} description={item.description} />
+              {gifts.map(gift => (
+                <GiftCard
+                  key={gift.id}
+                  image={getImageUrl(gift.Photo?.formats?.thumbnail?.url || gift.Photo?.url || '') || ''}
+                  title={gift.Name}
+                  description=""
+                />
               ))}
             </Carousel>
             <div className="text-gray-400 text-lg mt-8 text-center">При взносе от 5000₽</div>
@@ -298,13 +276,13 @@ const HomePage = () => {
           <div className="w-full bg-white rounded-3xl shadow-lg px-4 md:px-12 py-10 flex flex-col items-center">
             <h2 className="font-bold text-3xl md:text-4xl text-[#1A3E8A] mb-10 text-center">Партнеры</h2>
             <Carousel itemsToShow={5} gap={32} className="flex flex-row justify-center items-center w-full max-w-7xl">
-              {partners.map((p, idx) => (
+              {partners.map(partner => (
                 <PartnerCard
-                  key={idx}
-                  logo={p.logo}
-                  name={p.name}
-                  description={p.description}
-                  link={p.link}
+                  key={partner.id}
+                  logo={getImageUrl(partner.Logo?.formats?.thumbnail?.url || partner.Logo?.url || '') || ''}
+                  name={partner.Name}
+                  description={partner.Description}
+                  link={partner.Link}
                 />
               ))}
             </Carousel>
@@ -318,7 +296,7 @@ const HomePage = () => {
               {resources.map((res, idx) => (
                 <a
                   key={idx}
-                  href={res.link}
+                  href={res.Link}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex flex-col items-center group"
@@ -326,12 +304,12 @@ const HomePage = () => {
                   style={{ flex: `1 1 ${100 / resources.length}%`, maxWidth: 180 }}
                 >
                   <div className="w-20 h-20 rounded-2xl bg-[#DBEAFE] flex items-center justify-center mb-2 transition-transform group-hover:scale-105">
-                    {res.title.includes('Telegram')? (
+                    {res.Title.includes('Telegram')? (
                       <TelegramIcon className="w-10 h-10" />
                     ): 
                     (<SiteIcon className="w-10 h-10" />)}
                   </div>
-                  <div className="text-[#1E3A8A] text-lg font-medium text-center group-hover:underline">{res.title}</div>
+                  <div className="text-[#1E3A8A] text-lg font-medium text-center group-hover:underline">{res.Title}</div>
                 </a>
               ))}
             </div>
@@ -340,20 +318,20 @@ const HomePage = () => {
               {resources.map((res, idx) => (
                 <a
                   key={idx}
-                  href={res.link}
+                  href={res.Link}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex flex-col items-center group"
                   tabIndex={0}
                 >
                   <div className="w-20 h-20 rounded-2xl bg-[#DBEAFE] flex items-center justify-center mb-2 transition-transform group-hover:scale-105">
-                    {res.title.includes('Telegram')? (
+                    {res.Title.includes('Telegram')? (
                       <TelegramIcon className="w-10 h-10" />
                     ): 
                     (<SiteIcon className="w-10 h-10" />)}
                     
                   </div>
-                  <div className="text-[#1E3A8A] text-lg font-medium text-center group-hover:underline">{res.title}</div>
+                  <div className="text-[#1E3A8A] text-lg font-medium text-center group-hover:underline">{res.Title}</div>
                 </a>
               ))}
             </Carousel>
