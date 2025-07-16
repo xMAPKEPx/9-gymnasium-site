@@ -13,11 +13,10 @@ const Footer: FC = () => (
         </div>
         {/* Меню */}
         <nav className="flex gap-8 text-base font-normal">
-          <a href="#news" className="hover:underline">Новости</a>
-          <a href="#about" className="hover:underline">О школе</a>
-          <a href="#alumni" className="hover:underline">Выпускники</a>
-          <a href="#fund" className="hover:underline">Фонд</a>
-          <a href="#contacts" className="hover:underline">Контакты</a>
+          <a href="/timeline" className="hover:underline">Лента Времени</a>
+          <a href="/people" className="hover:underline">Люди</a>
+          <a href="/fund" className="hover:underline">Фонд</a>
+          <a href="/contacts" className="hover:underline">Контакты</a>
         </nav>
         {/* Соцсети */}
         <div className="flex gap-4">

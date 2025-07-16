@@ -11,7 +11,6 @@ const Header = () => {
         </a>
         {/* Меню */}
         <nav className="flex-1 flex justify-center gap-8 text-[#1A3E8A] font-medium text-base">
-          <a href="/news" className="hover:text-blue-900 transition-colors">Новости</a>
           <a href="/timeline" className="hover:text-blue-900 transition-colors">Лента Времени</a>
           <a href="/people" className="hover:text-blue-900 transition-colors">Люди</a>
           <a href="/fund" className="hover:text-blue-900 transition-colors">Фонд</a>
