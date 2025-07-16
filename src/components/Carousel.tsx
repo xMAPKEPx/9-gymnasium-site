@@ -1,4 +1,4 @@
-import { type FC, type ReactNode, useRef, useState, useEffect } from 'react';
+import { type FC, type ReactNode, useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 interface CarouselProps {
@@ -17,47 +17,50 @@ const Carousel: FC<CarouselProps> = ({ children, itemsToShow = 3, gap = 16, clas
   // Если элементов мало — не делаем бесконечную прокрутку и не показываем кнопки
   const isInfinite = total > itemsToShow;
 
-  // Дублируем элементы для бесконечной прокрутки
-  const extendedChildren = isInfinite
-    ? [
-        ...children.slice(-itemsToShow),
-        ...children,
-        ...children.slice(0, itemsToShow),
-      ]
-    : children;
+  // Мемоизация дублированных элементов для бесконечной прокрутки
+  const extendedChildren = useMemo(() => (
+    isInfinite
+      ? [
+          ...children.slice(-itemsToShow),
+          ...children,
+          ...children.slice(0, itemsToShow),
+        ]
+      : children
+  ), [children, isInfinite, itemsToShow]);
+
+  // Мемоизация ширины карточки
+  const cardWidth = useMemo(() => `calc((100% - ${(itemsToShow - 1) * gap}px) / ${itemsToShow})`, [itemsToShow, gap]);
 
   // Обработка перехода к клонам
   useEffect(() => {
     if (!isInfinite || !isTransitioning) return;
+    let timeout: NodeJS.Timeout;
     if (index === 0) {
-      setTimeout(() => {
+      timeout = setTimeout(() => {
         setIsTransitioning(false);
         setIndex(total);
       }, 300);
     } else if (index === total + itemsToShow) {
-      setTimeout(() => {
+      timeout = setTimeout(() => {
         setIsTransitioning(false);
         setIndex(itemsToShow);
       }, 300);
     }
+    return () => clearTimeout(timeout);
   }, [index, isTransitioning, total, itemsToShow, isInfinite]);
 
   // Управление переходом
-  const goTo = (newIndex: number) => {
+  const goTo = useCallback((newIndex: number) => {
     setIsTransitioning(true);
     setIndex(newIndex);
-  };
+  }, []);
 
-  const handlePrev = () => {
-    if (!isTransitioning) {
-      goTo(index - 1);
-    }
-  };
-  const handleNext = () => {
-    if (!isTransitioning) {
-      goTo(index + 1);
-    }
-  };
+  const handlePrev = useCallback(() => {
+    if (!isTransitioning) goTo(index - 1);
+  }, [isTransitioning, goTo, index]);
+  const handleNext = useCallback(() => {
+    if (!isTransitioning) goTo(index + 1);
+  }, [isTransitioning, goTo, index]);
 
   // Сброс transition после "телепортации"
   useEffect(() => {
@@ -72,12 +75,7 @@ const Carousel: FC<CarouselProps> = ({ children, itemsToShow = 3, gap = 16, clas
   }, [isTransitioning, index, itemsToShow, total, isInfinite]);
 
   // Вычисляем transform
-  const translate = isInfinite
-    ? -(100 / itemsToShow) * index
-    : 0;
-
-  // Ширина карточки с учётом gap
-  const cardWidth = `calc((100% - ${(itemsToShow - 1) * gap}px) / ${itemsToShow})`;
+  const translate = isInfinite ? -(100 / itemsToShow) * index : 0;
 
   return (
     <div className={`relative w-full ${className}`} aria-label="Карусель">

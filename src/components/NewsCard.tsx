@@ -1,5 +1,5 @@
 import Card from './Card';
-import { useRef, useState } from 'react';
+import { useRef, useState, useCallback } from 'react';
 
 interface NewsCardProps {
   image?: string;
@@ -14,21 +14,30 @@ const EXPANDED = 'max-h-[900px]';
 
 const NewsCard = ({ image, title, date, description, onClick }: NewsCardProps) => {
   const [expanded, setExpanded] = useState(false);
-  const timeoutRef = useRef<number | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleMouseEnter = () => {
+  const clearTimer = useCallback(() => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
-    setExpanded(true);
-  };
+  }, []);
 
-  const handleMouseLeave = () => {
-    timeoutRef.current = window.setTimeout(() => {
+  const handleMouseEnter = useCallback(() => {
+    clearTimer();
+    setExpanded(true);
+  }, [clearTimer]);
+
+  const handleMouseLeave = useCallback(() => {
+    clearTimer();
+    timeoutRef.current = setTimeout(() => {
       setExpanded(false);
     }, 500);
-  };
+  }, [clearTimer]);
+
+  // Очищаем таймер при размонтировании
+  // (на случай быстрого наведения/убирания мыши)
+  // useEffect не нужен, т.к. ref не теряется между рендерами
 
   return (
     <Card

@@ -4,7 +4,7 @@ import PartnerCard from '../components/PartnerCard';
 import ContactForm from '../components/ContactForm';
 import FeedbackModal from '../components/FeedbackModal';
 import Footer from '../components/Footer';
-import { useState, useEffect } from 'react';
+import { useMemo, useCallback, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope, FaClock } from 'react-icons/fa';
 import Button from '../components/Button';
@@ -52,27 +52,35 @@ const HomePage = () => {
       });
   }, []);
 
-  if (loading) return <div className="flex justify-center items-center min-h-screen">Загрузка...</div>;
-  if (error) return <div className="flex justify-center items-center min-h-screen text-red-500">{error}</div>;
-  if (!data) return null;
+  const partners = useMemo(() => data?.Partners || [], [data]);
+  const gifts = useMemo(() => data?.Gifts || [], [data]);
+  const resources = useMemo(() => data?.Resources || [], [data]);
 
-  const partners = data.Partners || [];
-  const gifts = data.Gifts || [];
-  const resources = data.Resources || [];
-  const news = [
+  // Новости — временно статичные, но мемоизированы
+  const news = useMemo(() => [
     { id: 1, image: '', title: 'Олимпиада по математике – 5 призеров!', date: '4 июня 2025', description: 'Наши ученики заняли призовые места на городской олимпиаде.' },
     { id: 2, image: '', title: 'Выпускной 2024 – фототчет', date: '4 июня 2025', description: 'Яркие моменты торжественного выпускного вечера.' },
     { id: 3, image: '', title: 'Набор в театральную студию', date: '4 июня 2025', description: 'Приглашаем учеников 5–11 классов в новую театральную студию.' },
     { id: 1, image: '', title: 'Олимпиада по математике – 5 призеров!', date: '4 июня 2025', description: 'Наши ученики заняли призовые места на городской олимпиаде.' },
     { id: 2, image: '', title: 'Выпускной 2024 – фототчет', date: '4 июня 2025', description: 'Яркие моменты торжественного выпускного вечера.' },
     { id: 3, image: '', title: 'Набор в театральную студию', date: '4 июня 2025', description: 'Приглашаем учеников 5–11 классов в новую театральную студию.вввввввввв ы  вы выывввввввы вывыыыыыыыыы вывввввввввввввввввввввл д лл д лл лвлвддвд дж ж жжэ эвэ ввы овылл овылво  вдывлд ылвж дыж двыжэдв эыждв эыжв эыжв эыжвэ жывэ жыэвжэ' },
-  ];
-  const timelineEvents = [
+  ], []);
+
+  const timelineEvents = useMemo(() => [
     { year: '1990', text: 'Основание гимназии' },
     { year: '2000', text: 'Первые медалисты' },
     { year: '2010', text: 'Новый корпус' },
     { year: '2020', text: 'Онлайн обучение' },
-  ];
+  ], []);
+
+  const handleNewsClick = useCallback((item: NewsItem) => {
+    setSelectedNews(item);
+    setModalOpen(true);
+  }, []);
+
+  if (loading) return <div className="flex justify-center items-center min-h-screen">Загрузка...</div>;
+  if (error) return <div className="flex justify-center items-center min-h-screen text-red-500">{error}</div>;
+  if (!data) return null;
 
   return (
     <div className="bg-bg min-h-screen flex flex-col">
@@ -241,12 +249,12 @@ const HomePage = () => {
         <Carousel itemsToShow={3}>
             {news.map(item => (
               <NewsCard
-                key={item.id}
+                key={item.id + item.title}
                 image={item.image}
                 title={item.title}
                 date={item.date}
                 description={item.description}
-                onClick={() => { setSelectedNews(item as NewsItem); setModalOpen(true); }}
+                onClick={() => handleNewsClick(item)}
               />
           ))}
         </Carousel>
