@@ -4,9 +4,6 @@ import { postMemory } from '../api/api';
 const SECTIONS = [
   'История класса',
   'Люди девятки',
-  'Выпускники',
-  'Учителя',
-  'Другое',
 ];
 
 interface FeedbackModalProps {

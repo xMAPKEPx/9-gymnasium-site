@@ -29,7 +29,7 @@ const NewsModal: FC<NewsModalProps> = ({ open, onClose, news }) => {
         )}
         <h2 className="font-heading text-h2 mb-2">{news.title}</h2>
         <div className="text-gray-400 text-sm mb-4">{news.date}</div>
-        <div className="prose text-gray-700">{news.description}</div>
+        <div className="prose text-gray-700 whitespace-pre-line">{news.description}</div>
       </div>
     </div>
   );

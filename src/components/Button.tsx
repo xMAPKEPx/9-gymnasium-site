@@ -14,8 +14,8 @@ const Button: FC<ButtonProps> = ({
 }) => {
   let variantClass = '';
   if (variant === 'primary') variantClass = 'bg-primary text-white font-medium text-lg rounded-lg px-8 py-3 transition-colors';
-  if (variant === 'accent') variantClass = 'bg-accent text-[#1A3E8A] font-medium text-lg rounded-lg px-8 py-3 transition-colors';
-  if (variant === 'secondary') variantClass = 'bg-gray-100 text-gray-900 hover:bg-gray-200';
+  if (variant === 'accent') variantClass = 'bg-accent text-[#20409A] font-medium text-lg rounded-lg px-8 py-3 transition-colors';
+  if (variant === 'secondary') variantClass = 'bg-gray-100 text-gray-900';
 
   let sizeClass = '';
   if (size === 'md') sizeClass = 'px-6 py-3 text-base';

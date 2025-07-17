@@ -66,7 +66,7 @@ const NewsCard = ({ image, title, date, description, onClick }: NewsCardProps) =
       >
         <div className="text-gray-400 text-sm mb-2">{date}</div>
         <div className={`font-bold text-primary text-lg mb-1 ${expanded ? '' : 'line-clamp-2'}`}>{title}</div>
-        <div className={`text-gray-700 text-base flex-1 ${expanded ? '' : 'line-clamp-3'}`}>{description}</div>
+        <div className={`text-gray-700 text-base flex-1 ${expanded ? '' : 'line-clamp-3'} whitespace-pre-line`}>{description}</div>
       </div>
     </Card>
   );

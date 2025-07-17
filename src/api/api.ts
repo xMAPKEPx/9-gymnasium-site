@@ -87,3 +87,17 @@ export const getYearById = async (documentId: string): Promise<SchoolYear | null
   return data?.data as SchoolYear;
 };
 
+// Получить данные для страницы эндаумента
+export const getEndowment = async () => {
+  const params = new URLSearchParams({
+    'populate[donors][fields][0]': 'date',
+    'populate[donors][fields][1]': 'name',
+    'populate[donors][fields][2]': 'amount',
+    'populate': 'documents',
+    'populate[news][populate][0]': 'Content_img',
+    'populate[team][populate][0]': 'Photo',
+  });
+  const { data } = await api.get(`/api/endowment?${params.toString()}`);
+  return data?.data;
+};
+
