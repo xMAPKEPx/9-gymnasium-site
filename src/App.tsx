@@ -4,6 +4,8 @@ import HomePage from './pages/HomePage';
 import TimelinePage from './pages/TimelinePage';
 import PeoplePage from './pages/PeoplePage';
 import AssociationPage from './pages/AssociationPage';
+import AllNewsPage from './pages/AllNewsPage';
+import NewsPage from './pages/NewsPage';
 
 function App() {
   return (
@@ -13,6 +15,8 @@ function App() {
         <Route path="/timeline" element={<TimelinePage />} />
         <Route path="/people" element={<PeoplePage />} />
         <Route path="/association" element={<AssociationPage />} />
+        <Route path="/news" element={<AllNewsPage />} />
+        <Route path="/news/:id" element={<NewsPage />} />
       </Routes>
     </Router>
   )

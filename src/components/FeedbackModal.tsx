@@ -24,7 +24,6 @@ const FeedbackModal = ({ open, onClose, defaultYear }: FeedbackModalProps) => {
   const [values, setValues] = useState({ ...initialState, year: defaultYear ? String(defaultYear) : '' });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [submitted, setSubmitted] = useState(false);
-  const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const currentYear = useMemo(() => new Date().getFullYear(), []);
 
@@ -67,24 +66,6 @@ const FeedbackModal = ({ open, onClose, defaultYear }: FeedbackModalProps) => {
       setValues(v => ({ ...v, [name]: value }));
       setErrors(err => ({ ...err, [name]: '' }));
     }
-  }, []);
-
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setDragActive(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setValues(v => ({ ...v, photo: e.dataTransfer.files[0] }));
-      setErrors(err => ({ ...err, photo: '' }));
-    }
-  }, []);
-
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setDragActive(true);
-  }, []);
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setDragActive(false);
   }, []);
 
   const handleFileClick = useCallback(() => {
@@ -137,8 +118,8 @@ const FeedbackModal = ({ open, onClose, defaultYear }: FeedbackModalProps) => {
         onClick={handleModalClick}
       >
         <button className="absolute top-2 right-2 text-2xl" onClick={onClose} aria-label="Закрыть">×</button>
-        <h2 className="text-2xl font-bold mb-8 text-center text-[#1A3E8A]">Отправить воспоминание</h2>
-        <form className="flex flex-col gap-5 w-full" onSubmit={handleSubmit}>
+        <h2 className="text-2xl font-bold mb-8 text-center heading-gradient">Отправить воспоминание</h2>
+        <form className="flex flex-col gap-5 w-full text-start" onSubmit={handleSubmit}>
           {errors.form && (
             <div className="text-red-500 text-sm mb-2">{errors.form}</div>
           )}
@@ -178,11 +159,8 @@ const FeedbackModal = ({ open, onClose, defaultYear }: FeedbackModalProps) => {
           <div className="flex flex-col gap-1">
             <label className="font-medium text-gray-700 mb-1">Фотография</label>
             <div
-              className={`border-2 border-dashed rounded-xl px-4 py-6 flex flex-col items-center justify-center cursor-pointer transition-colors ${dragActive ? 'border-blue-600 bg-blue-50' : 'border-blue-400 bg-blue-50'} ${errors.photo ? 'border-red-500' : ''}`}
+              className={`border-2 border-dashed rounded-xl px-4 py-6 flex flex-col items-center justify-center cursor-pointer transition-colors border-[var(--color-accent)] bg-[var(--color-section)] ${errors.photo ? 'border-red-500' : ''}`}
               onClick={handleFileClick}
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
             >
               <input
                 ref={fileInputRef}
@@ -191,8 +169,9 @@ const FeedbackModal = ({ open, onClose, defaultYear }: FeedbackModalProps) => {
                 accept="image/jpeg,image/png"
                 className="hidden"
                 onChange={handleChange}
+                required
               />
-              <svg width="40" height="40" fill="none" viewBox="0 0 24 24" className="mb-2 text-[#1A3E8A]"><path fill="currentColor" d="M12 16a1 1 0 0 1-1-1V9.83l-1.88 1.88a1 1 0 1 1-1.42-1.42l3.59-3.59a1 1 0 0 1 1.42 0l3.59 3.59a1 1 0 1 1-1.42 1.42L13 9.83V15a1 1 0 0 1-1 1Z"/><path fill="currentColor" d="M19 18H5a1 1 0 1 1 0-2h14a1 1 0 1 1 0 2Z"/></svg>
+              <svg width="40" height="40" fill="none" viewBox="0 0 24 24" className="mb-2 text-[var(--color-accent)]"><path fill="currentColor" d="M12 16a1 1 0 0 1-1-1V9.83l-1.88 1.88a1 1 0 1 1-1.42-1.42l3.59-3.59a1 1 0 0 1 1.42 0l3.59 3.59a1 1 0 1 1-1.42 1.42L13 9.83V15a1 1 0 0 1-1 1Z"/><path fill="currentColor" d="M19 18H5a1 1 0 1 1 0-2h14a1 1 0 1 1 0 2Z"/></svg>
               {values.photo ? (
                 <span className="text-gray-700 text-sm text-center">{values.photo.name}</span>
               ) : (
@@ -244,7 +223,8 @@ const FeedbackModal = ({ open, onClose, defaultYear }: FeedbackModalProps) => {
           <button
             type="submit"
             aria-label="Отправить воспоминание"
-            className={`block w-full py-2 text-base font-bold rounded-lg bg-[#1A3E8A] text-white hover:bg-[#23407C] focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200 mt-2 ${Object.keys(validate()).length > 0 ? 'opacity-60 cursor-not-allowed' : ''}`}
+            style={{ background: 'var(--gradient-accent)' }}
+            className={`block w-full py-2 text-base font-bold rounded-lg text-white hover:bg-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200 mt-2 ${Object.keys(validate()).length > 0 ? 'opacity-60 cursor-not-allowed' : ''}`}
             disabled={Object.keys(validate()).length > 0}
           >
             Отправить воспоминание

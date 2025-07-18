@@ -10,7 +10,7 @@ const SectionTitle: FC<SectionTitleProps> = ({ children, className = '', as = 'h
   const Tag = as;
   return (
     <Tag
-      className={`font-heading text-h2 md:text-h1 text-primary mb-6 tracking-tight ${className}`}
+      className={`heading-gradient font-bold text-3xl md:text-4xl text-center ${className}`}
     >
       {children}
     </Tag>

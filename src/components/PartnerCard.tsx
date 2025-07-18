@@ -19,7 +19,7 @@ const CardContent: FC<Omit<PartnerCardProps, 'link'>> = ({ logo, name, descripti
     ) : (
       <div className="w-20 h-20 flex items-center justify-center mb-4 rounded-xl bg-[#F3F6FA]">{logo}</div>
     )}
-    <div className="font-bold text-lg text-[#1A3E8A] mb-2 text-center">{name}</div>
+    <div className="font-extrabold text-lg text-[var(--color-text)] mb-2 text-center">{name}</div>
     <div className="text-gray-500 text-base text-center">{description}</div>
   </>
 );

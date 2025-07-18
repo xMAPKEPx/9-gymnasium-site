@@ -15,7 +15,7 @@ const GiftCard = ({ image, title, description, onClick }: GiftCardProps) => (
       className="w-32 h-32 object-contain mb-4"
       loading="lazy"
     />
-    <div className="font-bold text-lg text-[#1A3E8A] mb-2 text-center">{title}</div>
+    <div className="font-extrabold text-lg text-[var(--color-text)] mb-2 text-center">{title}</div>
     <div className="text-gray-500 text-base text-center">{description}</div>
   </Card>
 );

@@ -1,36 +1,48 @@
 import type { FC } from 'react';
-import { getShortName } from '../utils';
 
 interface PersonCardProps {
   avatarUrl?: string | null;
   name: string;
   role: string;
-  description?: string;
 }
 
-const PersonCard: FC<PersonCardProps> = ({ avatarUrl, name, role, description }) => (
-  <div className="bg-white rounded-xl shadow p-0 flex flex-col items-center text-center w-[12.5rem] h-[14.5rem]">
-    <div className="w-24 h-24 rounded-full bg-[#1E3A8A] flex items-center justify-center mt-6 mb-5 overflow-hidden">
-      {avatarUrl ? (
-        <img
-          src={avatarUrl}
-          alt={name}
-          className="w-full h-full object-cover rounded-full"
-        />
-      ) : (
-        <span className="text-white text-2xl font-bold select-none">
-          {name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-        </span>
+const PersonCard: FC<PersonCardProps> = ({ avatarUrl, name, role }) => {
+  let badgeBg = '';
+  let badgeText = '';
+  if (role?.toLowerCase().includes('учител')) {
+    badgeBg = 'bg-[#F0E7D2]';
+    badgeText = 'text-[#854D0E]';
+  } else {
+    badgeBg = 'bg-[#E6F6F1]';
+    badgeText = 'text-[#455A54]';
+  }
+  return (
+    <div className="flex flex-col items-center bg-transparent">
+      {/* Аватар */}
+      <div className="w-[96px] h-[96px] rounded-full bg-[var(--color-muted)] flex items-center justify-center mb-3 shadow-lg border-4 border-[var(--color-border)] overflow-hidden">
+        {avatarUrl ? (
+          <img
+            src={avatarUrl}
+            alt={name}
+            className="object-cover w-full h-full"
+          />
+        ) : (
+          <span className="text-2xl text-white font-bold">?</span>
+        )}
+      </div>
+      {/* Имя */}
+      <div className="font-extrabold text-[16px] leading-[24px] text-[var(--color-text)] text-center mb-1">
+        {name}
+      </div>
+      {/* Подпись */}
+      {role && (
+        <div className={`mt-1 px-2 py-1 rounded-[4px] text-[12px] leading-[17px] font-normal ${badgeBg} ${badgeText}`}
+          style={{display:'inline-block'}}>
+          {role}
+        </div>
       )}
     </div>
-    <div className="font-bold text-[20px] text-[#1E3A8A] mb-0 leading-tight">{getShortName(name)}</div>
-    {role && (
-      <div className="bg-[#FFF7CC] text-[#B89A00] font-bold text-[16px] rounded-[8px] px-4 h-8 flex items-center justify-center mt-3">
-        {role}
-      </div>
-    )}
-    {description && <div className="text-xs text-gray-500 mt-1 line-clamp-2">{description}</div>}
-  </div>
-);
+  );
+};
 
 export default PersonCard; 

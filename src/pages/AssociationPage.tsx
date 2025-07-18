@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Button from '../components/Button';
 import SectionTitle from '../components/SectionTitle';
 import Carousel from '../components/Carousel';
 import NewsCard from '../components/NewsCard';
-import NewsModal from '../components/NewsModal';
 import { getEndowment } from '../api/api';
 import type { EndowmentData, EndowmentDonor, EndowmentDocument, EndowmentNews, EndowmentTeamMember } from '../types/endowment';
-import { getImageUrl } from '../utils';
+import { formatNumberWithSpaces, getImageUrl, countUniqueDonors } from '../utils';
 
 const fundGoals: string[] = [
   'Помощь талантливым ученикам: участие в олимпиадах, выезды на конкурсы, возможно покупка техники',
@@ -35,8 +35,7 @@ const AssociationPage = () => {
   const [data, setData] = useState<EndowmentData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedNews, setSelectedNews] = useState<EndowmentNews | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getEndowment()
@@ -46,8 +45,7 @@ const AssociationPage = () => {
   }, []);
 
   const handleNewsClick = (news: EndowmentNews) => {
-    setSelectedNews(news);
-    setModalOpen(true);
+    navigate(`/news/${news.documentId}`);
   };
 
   if (loading) return <div className="min-h-screen flex items-center justify-center">Загрузка...</div>;
@@ -60,21 +58,25 @@ const AssociationPage = () => {
       <Header />
       <main className="flex-1 w-full mx-auto px-4 md:px-12 py-12 flex flex-col gap-16">
         {/* Сбор средств */}
-        <section className="bg-gradient-to-r from-[#1E3A8A] to-[#1D4ED8] rounded-2xl p-12 flex flex-col items-center text-white gap-4">
-          <h1 className="text-3xl md:text-4xl font-bold text-center">Целевой капитал «Гимназия №9»</h1>
-          <div className="text-4xl md:text-5xl font-extrabold">{data.total_amount} ₽</div>
-          <div className="text-lg">Кол-во дарителей: <span className="font-bold">{data.donors_count}</span></div>
-          <Button variant="accent" size="lg" className="mt-4" onClick={() => {/* navigate-заглушка */}}>Сделать взнос</Button>
+        <section style={{ background: 'var(--gradient-primary)' }}
+            className="rounded-2xl p-12 flex flex-col items-center text-white gap-4">
+          <h1 className="text-3xl md:text-4xl font-medium text-center">Целевой капитал «Гимназия №9»</h1>
+          <div className="text-4xl md:text-5xl font-extrabold italic">{formatNumberWithSpaces(data.total_amount)} ₽</div>
+          <div className="text-lg font-medium">Кол-во дарителей: <span className="font-bold">{countUniqueDonors(data.donors)}</span></div>
+          <Button style={{ background: 'linear-gradient(94.11deg, #779C8E -13.51%, #A6C6BA 108.05%)' }}
+              variant="accent" size="lg" className="mt-4 rounded-sm" onClick={() => {/* navigate-заглушка */}}>
+            Сделать взнос
+          </Button>
         </section>
 
         {/* Что такое эндаумент */}
         <section className="flex flex-col items-center gap-8">
           <SectionTitle>Что такое эндаумент</SectionTitle>
           <div className="max-w-2xl text-center text-gray-700 text-lg">Эндаумент-фонд Гимназии №9 — это неприкосновенный капитал, созданный для долгосрочной поддержки развития гимназии</div>
-          <div className="w-full bg-[#EFF6FF] rounded-xl py-8 px-[32rem] flex flex-col md:flex-row gap-8">
+          <div className="w-full bg-[var(--color-section)] rounded-xl py-8 px-[32rem] flex flex-col md:flex-row gap-8 text-start">
             {/* Цели фонда */}
             <div className="flex-1 flex flex-col gap-4">
-              <h3 className="text-xl font-bold text-[#1E3A8A] mb-2">Цель фонда</h3>
+              <h3 className="text-xl font-extrabold italic text-[var(--color-text)] mb-2">Цель фонда</h3>
               <div className="text-gray-700 mb-2">Целевой капитал предназначен для развития Гимназии и предполагает финансирование следующих проектов:</div>
               <ul className="list-none flex flex-col gap-2">
                 {fundGoals.map((goal: string, i: number) => (
@@ -87,11 +89,11 @@ const AssociationPage = () => {
             </div>
             {/* Как это работает */}
             <div className="flex-1 flex flex-col gap-4">
-              <h3 className="text-xl font-bold text-[#1E3A8A] mb-2">Как это работает</h3>
+              <h3 className="italic text-xl font-extrabold text-[var(--color-text)] mb-2">Как это работает</h3>
               <ol className="flex flex-col gap-4">
                 {howItWorks.map((step: string, i: number) => (
                   <li key={i} className="flex items-center gap-4">
-                    <span className="w-10 h-10 aspect-square flex items-center justify-center bg-[#1E3A8A] text-white font-bold rounded-full text-lg">{i+1}</span>
+                    <span className="w-10 h-10 aspect-square flex items-center justify-center bg-[var(--color-text)] text-white font-bold rounded-full text-lg">{i+1}</span>
                     <span>{step}</span>
                   </li>
                 ))}
@@ -101,23 +103,23 @@ const AssociationPage = () => {
         </section>
 
         {/* История создания эндаумента */}
-        <section className="w-full bg-[#F3F7FD] py-16 flex flex-col items-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#20409A] text-center mb-14">История создания эндаумента</h2>
+        <section className="w-full bg-[var(--color-section)] py-16 flex flex-col items-center">
+          <h2 className="text-3xl md:text-4xl font-bold heading-gradient italic text-center mb-14">История создания эндаумента</h2>
           <div className="relative w-full max-w-3xl mx-auto flex flex-col items-start">
             {/* Вертикальная линия */}
-            <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-[#20409A]/30 z-0" style={{minHeight: '100%'}} />
-            <ul className="relative z-10 w-full flex flex-col gap-12">
+            <div className="absolute left-[0.95rem] top-0 bottom-0 w-0.5 bg-[#455A54]/30 z-0" style={{minHeight: '100%'}} />
+            <ul className="relative z-10 w-full flex flex-col gap-12 text-start">
               {history.map((item: { year: string; text: string }, i: number) => (
                 <li key={i} className="flex items-start relative">
                   {/* Точка */}
                   <div className="flex flex-col items-center mr-8 min-w-[32px]">
-                    <div className="w-6 h-6 rounded-full border-2 border-[#20409A] bg-white flex items-center justify-center z-10">
-                      <div className="w-3 h-3 rounded-full bg-[#20409A]" />
+                    <div className="w-6 h-6 rounded-full border-4 border-[#455A54] bg-white flex items-center justify-center z-10">
+                      
                     </div>
                   </div>
                   {/* Контент */}
                   <div>
-                    <div className="font-bold text-[#20409A] text-lg md:text-xl mb-1">{item.year}</div>
+                    <div className="font-extrabold italic text-[var(--color-text)] text-lg md:text-xl mb-1">{item.year}</div>
                     <div className="text-[#1E293B] text-base md:text-lg max-w-2xl">{item.text}</div>
                   </div>
                 </li>
@@ -128,15 +130,15 @@ const AssociationPage = () => {
 
         {/* Список дарителей */}
         <section className="w-full py-16 flex flex-col items-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#20409A] text-center mb-2">Список дарителей</h2>
+          <h2 className="text-3xl md:text-4xl font-bold heading-gradient text-center mb-2">Список дарителей</h2>
           <div className="text-gray-400 text-lg text-center mb-8">Благодарим всех, кто уже сделал свой вклад в развитие гимназии</div>
-          <div className="w-full max-w-3xl bg-white rounded-3xl shadow-lg overflow-hidden">
+          <div className="w-full max-w-4xl bg-white rounded-3xl shadow-lg overflow-hidden">
             <div className="overflow-y-auto h-96 scrollbar-thin scrollbar-thumb-[#20409A] scrollbar-track-[#F3F7FD]">
               <table className="w-full text-base">
                 <tbody>
                   {data.donors.map((d: EndowmentDonor) => (
-                    <tr key={d.id} className="">
-                      <td className="py-6 px-4 text-center text-[#20409A] font-medium w-1/4">{d.date}</td>
+                    <tr key={d.id} className="border-b">
+                      <td className="py-6 px-4 text-center font-bold text-[var(--color-text)] w-1/4">{d.date}</td>
                       <td className="py-6 px-4 text-center text-black w-2/4">{d.name}</td>
                       <td className="py-6 px-4 text-center text-black font-medium w-1/4">{d.amount.toLocaleString()} ₽</td>
                     </tr>
@@ -146,14 +148,11 @@ const AssociationPage = () => {
             </div>
             {/* Линии между строками */}
             <style>{`
-              .donors-table tr:not(:last-child) td {
-                border-bottom: 1px solid #20409A22;
-              }
               .scrollbar-thin::-webkit-scrollbar {
                 width: 8px;
               }
               .scrollbar-thin::-webkit-scrollbar-thumb {
-                background: #20409A;
+                background: #455A54;
                 border-radius: 4px;
               }
               .scrollbar-thin::-webkit-scrollbar-track {
@@ -165,7 +164,7 @@ const AssociationPage = () => {
           <Button 
             variant="secondary" 
             size="lg" 
-            className="mt-8 border-2 border-[#20409A] text-[#20409A] bg-[#ECEEF1] rounded-2xl transition-colors duration-200 hover:bg-[#1E3A8A] hover:text-white hover:border-[#20409A] focus:bg-[#E9EBEF] focus:text-[#20409A] focus:border-[#20409A] px-10"
+            className="mt-8 border-2 bg-[#ECEEF1] rounded-2xl transition-colors duration-200 hover:bg-[var(--color-accent)] hover:text-white hover:border-[var(--color-accent)] focus:bg-[#E9EBEF] focus:text-[var(--color-accent)] focus:border-[var(--color-accent)] px-10"
           >
             Стать дарителем
           </Button>
@@ -173,8 +172,8 @@ const AssociationPage = () => {
 
         {/* Оргкомитет */}
         <section className="w-full bg-[#F3F7FD] py-16 flex flex-col items-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#20409A] text-center mb-2">Оргкомитет ассоциации и фонда</h2>
-          <div className="text-gray-500 text-lg text-center mb-12 max-w-2xl">Наша команда состоит из активных выпускников, педагогов и партнёров, которые работают над развитием гимназии и эффективным управлением фондом</div>
+          <h2 className="text-3xl md:text-4xl font-bold heading-gradient text-center mb-2">Оргкомитет ассоциации и фонда</h2>
+          <div className="text-gray-500 text-lg text-center mb-12 max-w-5xl">Наша команда состоит из активных выпускников, педагогов и партнёров, которые работают над развитием гимназии и эффективным управлением фондом</div>
           {data.team.length <= 5 ? (
             <div className="flex flex-row flex-wrap gap-8 justify-center w-full mb-8">
               {data.team.map((person: EndowmentTeamMember) => (
@@ -187,7 +186,7 @@ const AssociationPage = () => {
                     )}
                   </div>
                   <div className="flex flex-col items-center w-full pt-8">
-                    <div className="font-bold text-xl text-[#20409A] mb-1 text-center">{person.Name}</div>
+                    <div className="font-bold text-xl text-[var(--color-text)] mb-1 text-center">{person.Name}</div>
                     <div className="text-gray-500 text-base text-center">{person.Position}</div>
                   </div>
                 </div>
@@ -206,7 +205,7 @@ const AssociationPage = () => {
                       )}
                     </div>
                     <div className="flex flex-col items-center w-full pt-8">
-                      <div className="font-bold text-xl text-[#20409A] mb-1 text-center">{person.Name}</div>
+                      <div className="font-bold text-xl text-[var(--color-text)] mb-1 text-center">{person.Name}</div>
                       <div className="text-gray-500 text-base text-center">{person.Position}</div>
                     </div>
                   </div>
@@ -214,16 +213,16 @@ const AssociationPage = () => {
               </Carousel>
             </div>
           )}
-          <Button variant="accent" size="lg" className="mt-2 hover:bg-primary hover:text-white">Вступай в оргкомитет</Button>
+          <Button variant="accent" size="lg" className="mt-2 transition-colors duration-200 hover:bg-[var(--color-primary)] hover:text-white">Вступай в оргкомитет</Button>
         </section>
 
         {/* Документы */}
         <section className="flex flex-col items-center gap-8">
-          <SectionTitle>Официальные документы</SectionTitle>
+          <SectionTitle className=''>Официальные документы</SectionTitle>
           <div className="w-full max-w-3xl bg-white rounded-3xl shadow-lg p-6 flex flex-col gap-4 h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-[#20409A] scrollbar-track-[#F3F7FD]">
             {data.documents.map((doc: EndowmentDocument) => (
-              <div key={doc.id} className="flex items-center gap-4 py-2 px-2 rounded-xl hover:bg-[#F3F7FD] transition">
-                <div className="w-14 h-14 flex items-center justify-center bg-white rounded-full border border-[#20409A] text-[#20409A] font-bold text-lg">
+              <div key={doc.id} className="flex items-center gap-4 py-2 px-2 rounded-xl transition">
+                <div className="w-16 h-16 flex items-center justify-center bg-[#DBEAFE] rounded-full text-[var(--color-text)] font-extrabold text-lg">
                   {doc.ext === '.pdf' ? (
                     <img src="/img/icons/icon-pdf.svg" alt="PDF" className="w-8 h-8 object-contain" />
                   ) : (
@@ -231,17 +230,16 @@ const AssociationPage = () => {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="font-bold text-[#1E3A8A] truncate">{doc.name}</div>
+                  <div className="font-extrabold italic text-[var(--color-text)] truncate">{doc.name}</div>
                   <div className="text-xs text-gray-400">{doc.ext.replace('.', '').toUpperCase()}, {doc.size} МБ</div>
                 </div>
                 <Button
                   variant="secondary"
-                  size="md"
-                  className="flex items-center gap-2 border border-[#20409A] text-[#20409A] bg-white rounded-xl px-4 py-2 hover:bg-[#F3F7FD] transition"
-                  onClick={() => window.open(doc.url, '_blank')}
+                  size=''
+                  className="border-none hover:bg-transparent p-3"
+                  onClick={() => window.open(getImageUrl(doc.url) || undefined, '_blank')}
                 >
                   <img src="/img/icons/icon-download.svg" alt="" className="w-4 h-4" />
-                  Скачать
                 </Button>
               </div>
             ))}
@@ -250,7 +248,7 @@ const AssociationPage = () => {
                 width: 8px;
               }
               .scrollbar-thin::-webkit-scrollbar-thumb {
-                background: #20409A;
+                background: #455A54;
                 border-radius: 4px;
               }
               .scrollbar-thin::-webkit-scrollbar-track {
@@ -259,25 +257,11 @@ const AssociationPage = () => {
               }
             `}</style>
           </div>
-          <Button
-            variant="secondary"
-            size="lg"
-            className="flex items-center gap-2 border-2 border-[#20409A] text-[#20409A] bg-white rounded-2xl px-8 py-3 hover:bg-[#ECEEF1] hover:text-[#20409A] transition"
-            onClick={() => {/* navigate-заглушка */}}
-          >
-            <img src="/img/icons/icon-downloadAll.svg" alt="" className="w-6 h-6" />
-            Скачать одним архивом
-          </Button>
         </section>
 
         {/* Новости */}
         <section className="bg-[#EFF6FF] rounded-2xl p-12 flex flex-col gap-8">
-          <div className="flex items-center justify-between mb-4">
-            <SectionTitle className="mb-0">Новости и анонсы мероприятий</SectionTitle>
-            <Button variant="secondary" size="md" onClick={() => {/* navigate-заглушка */}}>
-              Все новости <img src='/img/icons/icon-rightArrow.svg' /> 
-            </Button>
-          </div>
+          <SectionTitle className="mb-0">Новости и анонсы мероприятий</SectionTitle>
           <div className="flex flex-wrap gap-8 justify-center">
             <Carousel itemsToShow={3}>
               {data.news.map((event: EndowmentNews) => (
@@ -292,20 +276,25 @@ const AssociationPage = () => {
               ))}
             </Carousel>
           </div>
+          <div className='w-full flex items-center justify-center'>
+            <Button variant="accent" size="md" className='hover:bg-[var(--color-primary)]' onClick={() => {/* navigate-заглушка */}}>
+              Все новости <img src='/img/icons/icon-rightArrow.svg' /> 
+            </Button>
+          </div>
         </section>
 
         {/* Поддержите будущее */}
-        <section className="bg-[#FFFBE9] border border-[#FFD700] rounded-3xl py-12 px-56 flex flex-col items-center gap-4 shadow">
-          <h2 className="text-2xl md:text-3xl font-bold text-[#1E3A8A] text-center mb-2">Поддержите будущее гимназии</h2>
-          <div className="text-lg text-center text-[#1E40AF] mb-4">Ваше пожертвование позволяет сохранять традиции и развивать образование для новых поколений</div>
-          <Button variant="accent" size="lg" className='hover:bg-primary hover:text-white'
+        <section style={{ background: 'linear-gradient(90deg, #FFEECB 0%, #DCC494 100%)'}}
+          className="rounded-3xl py-12 px-56 flex flex-col items-center gap-4 shadow">
+          <h2 className="font-extrabold text-3xl md:text-4xl mb-2 text-center text-[var(--color-text)]">Поддержите будущее гимназии</h2>
+          <div className="text-lg text-center text-[var(--color-text)] mb-4">Ваше пожертвование позволяет сохранять традиции и развивать образование для новых поколений</div>
+          <Button variant="primary" size="lg" className='border-2 border-[var(--color-primary)] hover:bg-transparent hover:border-[var(--color-secondary)] hover:text-[var(--color-text)] transition-colors'
           onClick={() => {/* navigate-заглушка */}}>
             Сделать взнос в фонд
           </Button>
         </section>
       </main>
       <Footer />
-      <NewsModal open={modalOpen} onClose={() => setModalOpen(false)} news={selectedNews ? { title: selectedNews.Title, date: selectedNews.Date || '', description: selectedNews.Content, image: getImageUrl(selectedNews.Content_img[0]?.formats?.thumbnail?.url || selectedNews.Content_img[0]?.url) || undefined } : null} />
     </div>
   );
 };

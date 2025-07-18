@@ -89,8 +89,6 @@ const VisitForm = ({ open, onClose }: VisitFormProps) => {
     return options;
   }, [isToday, values.date, now]);
 
-  if (!open) return null;
-
   const validate = useCallback(() => {
     const newErrors: { [key: string]: string } = {};
     if (!values.name) newErrors.name = 'Поле обязательно для заполнения';
@@ -138,6 +136,8 @@ const VisitForm = ({ open, onClose }: VisitFormProps) => {
     e.stopPropagation();
   }, []);
 
+  if (!open) return null;
+
   if (submitted) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
@@ -153,8 +153,8 @@ const VisitForm = ({ open, onClose }: VisitFormProps) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
       <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-xl relative" onClick={handleModalClick}>
         <button className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl" onClick={onClose} aria-label="Закрыть">×</button>
-        <h2 className="text-2xl font-bold text-center text-[#1A3E8A] mb-8">Запись на посещение</h2>
-        <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+        <h2 className="text-2xl font-bold text-center heading-gradient mb-8">Запись на посещение</h2>
+        <form className="flex flex-col gap-5 text-start" onSubmit={handleSubmit}>
           {errors.form && (
             <div className="text-red-500 text-sm mb-2">{errors.form}</div>
           )}
@@ -250,7 +250,8 @@ const VisitForm = ({ open, onClose }: VisitFormProps) => {
           <button
             type="submit"
             aria-label="Отправить заявку"
-            className="block w-full py-2 text-base font-bold rounded-lg bg-[#1A3E8A] text-white hover:bg-[#23407C] focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200 mt-2"
+            style={{ background: 'var(--gradient-accent)' }}
+            className="block w-full py-2 text-base font-bold rounded-lg text-white hover:bg-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200 mt-2"
           >
             Отправить заявку
           </button>

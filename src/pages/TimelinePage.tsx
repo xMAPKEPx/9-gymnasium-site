@@ -4,7 +4,7 @@ import Footer from '../components/Footer';
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { getTimelines } from '../api/api';
 import Loader from '../components/Loader';
-import type { ContentImage } from '../types/NewsTypes';
+import type { ContentImage } from '../types/news';
 import { getImageUrl } from '../utils';
 
 interface TimelineEvent {
@@ -73,7 +73,7 @@ const TimelinePage = () => {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [timelineIds]);
+  }, [timelineIds, timelines.length]);
 
   if (loading) {
     return (
@@ -89,11 +89,11 @@ const TimelinePage = () => {
       <main ref={mainRef} className="flex-1 w-full grid grid-cols-[220px_1fr] gap-8 px-[13rem] py-12">
         {/* Левое меню */}
         <aside className="col-span-1">
-          <nav className="sticky top-24 flex flex-col gap-2 bg-white rounded-xl border border-blue-100 p-4">
+          <nav className="sticky top-24 flex flex-col gap-2 bg-white rounded-xl p-4">
             {timelines.map(e => (
               <button
                 key={e.id}
-                className={`px-4 py-2 rounded-lg font-semibold text-base text-left transition-all duration-200 ${epoch === e.id ? 'bg-blue-100 text-blue-900' : 'hover:bg-blue-50 text-blue-800'}`}
+                className={`px-4 py-2 rounded-lg font-semibold text-base text-left transition-all duration-200 ${epoch === e.id ? 'bg-[var(--color-section)] text-[var(--color-text)]' : 'hover:bg-[var(--color-section)] text-[var(--color-text)]'}`}
                 onClick={() => handleMenuClick(e.id)}
               >
                 {e.Title || 'Без названия'}

@@ -31,6 +31,7 @@ export interface EndowmentDonor {
 // Новость
 export interface EndowmentNews {
   id: number;
+  documentId: string;
   Title: string;
   Content: string;
   Date: string | null;

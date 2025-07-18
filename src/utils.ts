@@ -17,3 +17,23 @@ export const getShortName = (fullName: string) => {
   if (patronymic) initials += patronymic[0] + '.';
   return surname + (initials ? ' ' + initials : '');
 };
+
+export function formatNumberWithSpaces(num: number | string): string {
+  return num
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
+export function countUniqueDonors(donors: { name: string }[]): number {
+  const unique = new Set(donors.map(d => d.name.trim()));
+  return unique.size;
+}
+
+export const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  const months = [
+    'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+    'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+  ];
+  return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+};

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback } from 'react';
 
 const ContactForm = () => {
   const [values, setValues] = useState({ name: '', phone: '', subject: '', message: '' });
@@ -98,7 +98,9 @@ const ContactForm = () => {
       <button
         type="submit"
         aria-label="Отправить сообщение"
-        className="block w-full py-2 text-base font-medium rounded-lg bg-primary text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200"
+        className="font-heading duration-300 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-primary
+          border-2 border-[var(--color-primary)] bg-[var(--color-primary)] text-white font-medium text-lg rounded-lg px-8 py-3 
+          hover:bg-transparent hover:border-[var(--color-secondary)] hover:text-[var(--color-secondary)] transition-colors"
       >
         Отправить
       </button>

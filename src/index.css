@@ -1,20 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&display=swap');
 @import "tailwindcss";
 @tailwind utilities;
 
-@theme {
-  /* Цвета */
-  --color-primary: #223F93;
-  --color-accent: #EAB308;
-  --color-bg: #F8F9FB;
+:root {
+  --color-primary: #6B5D42;
+  --color-accent: #5B7B70;
+  --color-secondary: #5B7B70;
+  --color-bg: #fff;
+  --color-section: #E6F2ED;
+  --color-text: #455A54;
+  --color-muted: #6B7A7A;
+  --color-border: #D9E3DF;
+  --color-footer: #8A7454;
+  --color-white: #fff;
+  --gradient-primary: linear-gradient(90deg, #8A7454 0%, #AE936B 50%, #AE936B 100%);
+  --gradient-accent: linear-gradient(90deg, #5B7B70 0%, #779C8E 100%);
+  --gradient-heading: linear-gradient(90deg, #455A54 -11.42%, #779C8E 109.36%);
   --color-gray-100: #F3F4F6;
   --color-gray-400: #9CA3AF;
   --color-gray-700: #374151;
   --color-gray-900: #111827;
-
-  /* Шрифты */
-  --font-sans: Inter, Arial, sans-serif;
-  --font-heading: Montserrat, Arial, sans-serif;
-
   /* Тени */
   --shadow-card: 0 4px 24px 0 rgba(26, 86, 219, 0.08);
   --shadow-card-lg: 0 8px 32px 0 rgba(26, 86, 219, 0.16);
@@ -22,27 +27,94 @@
   /* Размеры шрифтов */
   --text-h1: 2.5rem;
   --text-h1--line-height: 3rem;
-  --text-h1--font-weight: 700;
+  --text-h1--font-weight: 900;
   --text-h2: 2rem;
   --text-h2--line-height: 2.5rem;
-  --text-h2--font-weight: 600;
+  --text-h2--font-weight: 900;
   --text-h3: 1.5rem;
   --text-h3--line-height: 2rem;
-  --text-h3--font-weight: 600;
+  --text-h3--font-weight: 700;
+  --text-base: 1rem;
+  --text-base--line-height: 1.5rem;
+  --text-base--font-weight: 400;
+}
 
-  /* Радиусы */
-  --radius-xl: 1.25rem;
-
-  /* Градиенты */
-  --background-hero-gradient: linear-gradient(90deg, #1A56DB 0%, #F59E42 100%);
+.heading-gradient {
+  background: var(--gradient-heading);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+.h1 {
+  font-size: var(--text-h1);
+  line-height: var(--text-h1--line-height);
+  font-weight: var(--text-h1--font-weight);
+  font-style: italic;
+}
+.h2 {
+  font-size: var(--text-h2);
+  line-height: var(--text-h2--line-height);
+  font-weight: var(--text-h2--font-weight);
+  font-style: italic;
+}
+.h3 {
+  font-size: var(--text-h3);
+  line-height: var(--text-h3--line-height);
+  font-weight: var(--text-h3--font-weight);
+}
+.text-base {
+  font-size: var(--text-base);
+  line-height: var(--text-base--line-height);
+  font-weight: var(--text-base--font-weight);
+}
+.text-muted {
+  color: var(--color-muted);
+}
+.text-accent {
+  color: var(--color-accent);
+}
+.btn {
+  font-family: 'Merriweather', serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 0.75rem 2rem;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.btn-primary {
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+}
+.btn-accent {
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--color-secondary);
+  border: 2px solid var(--color-secondary);
+  border-radius: 8px;
+}
+.btn-secondary:hover {
+  opacity: 0.8;
 }
 
 html {
     scroll-behavior: smooth;
 }
 
+html, body {
+  font-family: 'Merriweather', serif;
+  color: var(--color-text);
+}
+
 body {
-    overflow-x: hidden;
+  overflow-x: hidden;
+  background: #fff;
 }
 
 * {

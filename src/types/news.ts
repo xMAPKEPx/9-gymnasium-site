@@ -47,6 +47,7 @@ export interface NewsItem {
     publishedAt: string;
     locale: string;
     Content: string;
-    Publish_date: string;
+    Publish_date?: string;
+    Date?: string; // дата публикации из API
     Content_img?: ContentImage[];
 } 
