@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  app-preview:
+    build:
+      context: .
+      dockerfile: Dockerfile.preview
+    ports:
+      - "4173:4173"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production 
