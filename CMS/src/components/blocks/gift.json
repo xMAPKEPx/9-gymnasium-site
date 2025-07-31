@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_blocks_gifts",
+  "info": {
+    "displayName": "Подарок",
+    "icon": "magic"
+  },
+  "options": {},
+  "attributes": {
+    "Name": {
+      "type": "string",
+      "required": true
+    },
+    "Photo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    }
+  },
+  "config": {}
+}

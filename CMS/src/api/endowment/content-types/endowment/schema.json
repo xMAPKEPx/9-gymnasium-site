@@ -1,0 +1,44 @@
+{
+  "kind": "singleType",
+  "collectionName": "endowments",
+  "info": {
+    "singularName": "endowment",
+    "pluralName": "endowments",
+    "displayName": "Эндаумент"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "total_amount": {
+      "type": "string"
+    },
+    "donors_count": {
+      "type": "string"
+    },
+    "donors": {
+      "type": "component",
+      "component": "endowment-blocks.donor",
+      "repeatable": true
+    },
+    "documents": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "files"
+      ]
+    },
+    "news": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::news.news"
+    },
+    "team": {
+      "type": "component",
+      "component": "endowment-blocks.team",
+      "repeatable": true
+    }
+  }
+}

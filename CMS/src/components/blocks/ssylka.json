@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_blocks_ssylka",
+  "info": {
+    "displayName": "Ссылка",
+    "icon": "link"
+  },
+  "options": {},
+  "attributes": {
+    "Title": {
+      "type": "string",
+      "required": true
+    },
+    "Link": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "config": {}
+}

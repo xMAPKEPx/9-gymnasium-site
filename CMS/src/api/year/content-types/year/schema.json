@@ -1,0 +1,26 @@
+{
+  "kind": "collectionType",
+  "collectionName": "years",
+  "info": {
+    "singularName": "year",
+    "pluralName": "years",
+    "displayName": "Год"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Year": {
+      "type": "integer",
+      "required": true,
+      "unique": true,
+      "min": 1930
+    },
+    "Classes": {
+      "type": "component",
+      "component": "blocks.class",
+      "repeatable": true
+    }
+  }
+}

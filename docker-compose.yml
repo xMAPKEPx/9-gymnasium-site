@@ -1,10 +1,49 @@
 services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      - POSTGRES_DB=strapi
+      - POSTGRES_USER=strapi
+      - POSTGRES_PASSWORD=strapi_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U strapi -d strapi"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.simple
     ports:
-      - "3000:80"
-    restart: unless-stopped
+      - "3000:3000"
+      - "1337:1337"
     environment:
-      - NODE_ENV=production 
+      - NODE_ENV=development
+      - NODE_OPTIONS=--max-old-space-size=4096
+      - DATABASE_CLIENT=postgres
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=strapi
+      - DATABASE_USERNAME=strapi
+      - DATABASE_PASSWORD=strapi_password
+      - DATABASE_SSL=false
+      - JWT_SECRET=your-jwt-secret-here
+      - ADMIN_JWT_SECRET=your-admin-jwt-secret-here
+      - APP_KEYS=your-app-keys-here
+      - API_TOKEN_SALT=your-api-token-salt-here
+      - TRANSFER_TOKEN_SALT=your-transfer-token-salt-here
+    volumes:
+      - ./uploads:/app/public/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data: 

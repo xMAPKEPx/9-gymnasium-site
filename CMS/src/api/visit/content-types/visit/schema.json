@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "visits",
+  "info": {
+    "singularName": "visit",
+    "pluralName": "visits",
+    "displayName": "Посещения"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Full_name": {
+      "type": "string",
+      "required": true
+    },
+    "Graduate_year": {
+      "type": "integer",
+      "required": true,
+      "min": 1930
+    },
+    "Date": {
+      "type": "date",
+      "required": true
+    },
+    "Time": {
+      "type": "string",
+      "maxLength": 5,
+      "required": true
+    }
+  }
+}

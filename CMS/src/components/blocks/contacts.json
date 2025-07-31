@@ -1,0 +1,30 @@
+{
+  "collectionName": "components_blocks_contacts",
+  "info": {
+    "displayName": "Контакт",
+    "icon": "rotate"
+  },
+  "options": {},
+  "attributes": {
+    "Logo": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "Title": {
+      "type": "string",
+      "required": true
+    },
+    "Phone": {
+      "type": "string",
+      "required": false
+    },
+    "Email": {
+      "type": "email"
+    }
+  },
+  "config": {}
+}

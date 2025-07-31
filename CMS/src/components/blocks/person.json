@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_blocks_people",
+  "info": {
+    "displayName": "Человек",
+    "icon": "user"
+  },
+  "options": {},
+  "attributes": {
+    "Full_name": {
+      "type": "string",
+      "required": true
+    },
+    "Description": {
+      "type": "string",
+      "default": "Выпускник",
+      "required": true
+    },
+    "Photo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    }
+  },
+  "config": {}
+}

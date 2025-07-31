@@ -1,0 +1,106 @@
+{
+  "collectionName": "components_blocks_events",
+  "info": {
+    "displayName": "Событие эпохи",
+    "icon": "paperPlane"
+  },
+  "options": {},
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "Type": {
+      "type": "enumeration",
+      "required": true,
+      "default": "Article",
+      "enum": [
+        "Article",
+        "Photo",
+        "Gallery",
+        "Video"
+      ]
+    },
+    "Content": {
+      "type": "text",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "Type"
+            },
+            "Article"
+          ]
+        }
+      },
+      "required": true
+    },
+    "Image": {
+      "type": "media",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "Type"
+            },
+            "Photo"
+          ]
+        }
+      },
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "Gallery": {
+      "type": "media",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "Type"
+            },
+            "Gallery"
+          ]
+        }
+      },
+      "multiple": true,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "Video": {
+      "type": "media",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "Type"
+            },
+            "Video"
+          ]
+        }
+      },
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "videos"
+      ]
+    },
+    "Caption": {
+      "type": "text",
+      "conditions": {
+        "visible": {
+          "!=": [
+            {
+              "var": "Type"
+            },
+            "Article"
+          ]
+        }
+      }
+    }
+  },
+  "config": {}
+}

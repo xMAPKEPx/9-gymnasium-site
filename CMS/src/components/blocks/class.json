@@ -1,0 +1,35 @@
+{
+  "collectionName": "components_blocks_classes",
+  "info": {
+    "displayName": "Класс",
+    "icon": "feather"
+  },
+  "options": {},
+  "attributes": {
+    "Literal": {
+      "type": "string",
+      "maxLength": 1,
+      "required": true,
+      "unique": true
+    },
+    "Class_photo": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "Class_persons": {
+      "type": "component",
+      "component": "blocks.person",
+      "repeatable": true
+    },
+    "vospominaniyas": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::memory.memory"
+    }
+  },
+  "config": {}
+}

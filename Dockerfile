@@ -1,32 +1,45 @@
-# Этап сборки
-FROM node:20-alpine AS builder
+# Простой Dockerfile для продакшена (без сборки Strapi)
+FROM node:20-alpine
 
-# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем файлы зависимостей
-COPY package*.json ./
+# Увеличиваем память для Node.js
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 # Устанавливаем зависимости
+RUN apk add --no-cache python3 make g++ postgresql-client
+
+# Копируем package.json для установки зависимостей
+COPY CMS/package*.json ./cms/
+COPY Front/package*.json ./frontend/
+
+# Устанавливаем зависимости
+WORKDIR /app/cms
+RUN npm install
+
+WORKDIR /app/frontend
 RUN npm install
 
 # Копируем исходный код
-COPY . .
+WORKDIR /app
+COPY CMS/ ./cms/
+COPY Front/ ./frontend/
 
-# Собираем приложение
+# Копируем скрипт запуска
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
+# Устанавливаем serve для frontend
+WORKDIR /app/frontend
+RUN npm install -g serve
 RUN npm run build
 
-# Этап продакшена
-FROM nginx:alpine AS production
+# Создаем директории
+WORKDIR /app
+RUN mkdir -p public/uploads
 
-# Копируем собранное приложение в nginx
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Открываем порты
+EXPOSE 3000 1337
 
-# Копируем конфигурацию nginx для SPA
-COPY nginx.conf /etc/nginx/nginx.conf
-
-# Открываем порт 80
-EXPOSE 80
-
-# Запускаем nginx
-CMD ["nginx", "-g", "daemon off;"] 
+# Запускаем скрипт
+CMD ["/app/start.sh"] 

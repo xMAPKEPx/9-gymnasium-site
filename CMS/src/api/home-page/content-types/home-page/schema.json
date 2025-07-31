@@ -1,0 +1,35 @@
+{
+  "kind": "singleType",
+  "collectionName": "home_pages",
+  "info": {
+    "singularName": "home-page",
+    "pluralName": "home-pages",
+    "displayName": "Домашняя страница"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Partners": {
+      "type": "component",
+      "component": "blocks.partner",
+      "repeatable": true
+    },
+    "Gifts": {
+      "type": "component",
+      "component": "blocks.gift",
+      "repeatable": true
+    },
+    "Resources": {
+      "type": "component",
+      "component": "blocks.ssylka",
+      "repeatable": true
+    },
+    "Contacts": {
+      "type": "component",
+      "component": "blocks.contacts",
+      "repeatable": true
+    }
+  }
+}

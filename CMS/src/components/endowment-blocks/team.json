@@ -1,0 +1,30 @@
+{
+  "collectionName": "components_endowment_blocks_teams",
+  "info": {
+    "displayName": "Команда",
+    "icon": "manyToMany"
+  },
+  "options": {},
+  "attributes": {
+    "Name": {
+      "type": "string",
+      "required": true
+    },
+    "Position": {
+      "type": "string",
+      "required": true
+    },
+    "Photo": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "bio": {
+      "type": "text"
+    }
+  },
+  "config": {}
+}
